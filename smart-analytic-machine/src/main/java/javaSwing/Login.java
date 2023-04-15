@@ -12,6 +12,7 @@ import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,6 +32,10 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
+    }
+
+    private void dispose(boolean b) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 //Degradê
@@ -315,12 +320,28 @@ public class Login extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         // TODO add your handling code here:
+        String usuario = String.valueOf(iptUser.getText());
+        String senha = String.valueOf(iptPass.getText());
+
+        Monitoramento monitoramento = new Monitoramento();
+
+//        System.out.println(usuario);
+//        System.out.println(senha);
+
         List<LoginTeste> listaUsuario = new ArrayList();
-        
-        listaUsuario = con.query("SELECT * FROM tbUsuario",
-                new BeanPropertyRowMapper(LoginTeste.class));
-        
-        System.out.println(listaUsuario);
+
+        listaUsuario = con.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
+                new BeanPropertyRowMapper(LoginTeste.class), usuario, senha);
+
+        if (listaUsuario.isEmpty()) {
+//            System.out.println("nao foi");
+            JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
+        } else {
+//            System.out.println(" foi");
+            JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
+            Login.this.dispose();
+            monitoramento.setVisible(true);
+        }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void btnEntrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEntrarMouseEntered
