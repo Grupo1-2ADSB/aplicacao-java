@@ -31,16 +31,34 @@ public class MonitoramentoMaquinaService {
        ServicoGrupo grupoDeServicos;
        ProcessoGrupo grupoDeProcessos;*/
     
+    /*tabela leitura
+    CREATE TABLE tbLeitura(
+	idLeitura INT PRIMARY KEY AUTO_INCREMENT,
+	leitura DOUBLE NOT NULL, 
+    dataHoraLeitura DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    fkConfig INT,
+		CONSTRAINT fkConfig 
+			FOREIGN KEY(fkConfig) REFERENCES tbConfig(idConfig),
+	fkAlertaComponente INT,
+		CONSTRAINT fkAlertaComponente
+			FOREIGN KEY(fkAlertaComponente) REFERENCES tbAlertaComponente(idAlertaComponente)
+);
     
-    public void inserirDadosLeitura() {
+    */    
+    
+    /*public void inserirDadosLeitura() {
 
         JdbcTemplate conexao = new JdbcTemplate();
 
-        /*conexao.update(
-                "insert into leitura values (?,?,?)",
-                //dados , fk Config , fk Alerta             
+        conexao.update(
+                "insert into tbLeitura values (?,?,?,?)",
+                          
                        
         );*/
+        
+        /*   conexaoService.update("insert into filme values (?,?,?)",
+                novoFilme.getId(), novoFilme.getNome(), novoFilme.getAnoLancamento());
+    }*/
     }
 
-}
+
