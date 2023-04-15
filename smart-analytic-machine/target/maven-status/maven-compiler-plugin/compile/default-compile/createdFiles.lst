@@ -1,9 +1,13 @@
 javaSwing\Login$1.class
 javaSwing\Login$6.class
+controller\MonitoramentoMaquinaConexao.class
 javaSwing\Login$2.class
 javaSwing\Login$7.class
+javaSwing\LoginTeste.class
 javaSwing\Login$3.class
+controller\ConexaoBanco.class
 javaSwing\Login$4.class
 javaSwing\Login.class
 javaSwing\Login$5.class
+service\MonitoramentoMaquinaService.class
 javaSwing\Login$jPanelGradient.class

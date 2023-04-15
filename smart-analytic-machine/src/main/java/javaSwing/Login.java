@@ -9,14 +9,22 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  *
  * @author Leo
  */
 public class Login extends javax.swing.JFrame {
+
+    controller.ConexaoBanco conexao = new controller.ConexaoBanco();
+
+    JdbcTemplate con = conexao.getConnection();
 
     /**
      * Creates new form Login
@@ -42,7 +50,6 @@ public class Login extends javax.swing.JFrame {
 
         }
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -308,6 +315,12 @@ public class Login extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         // TODO add your handling code here:
+        List<LoginTeste> listaUsuario = new ArrayList();
+        
+        listaUsuario = con.query("SELECT * FROM tbUsuario",
+                new BeanPropertyRowMapper(LoginTeste.class));
+        
+        System.out.println(listaUsuario);
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void btnEntrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEntrarMouseEntered
@@ -327,8 +340,6 @@ public class Login extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-
-
 
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
