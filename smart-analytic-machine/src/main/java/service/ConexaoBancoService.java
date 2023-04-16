@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package controller;
+package service;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,11 +11,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author Leo
  */
-public class ConexaoBanco {
+public class ConexaoBancoService {
 
-    private JdbcTemplate connection;
+    private final JdbcTemplate connection;
 
-    public ConexaoBanco() {
+    public ConexaoBancoService() {
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource​.setDriverClassName("com.mysql.cj.jdbc.Driver");

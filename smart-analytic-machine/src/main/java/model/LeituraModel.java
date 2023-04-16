@@ -4,60 +4,78 @@
  */
 package model;
 
+import java.time.LocalDateTime;
 /**
  *
  * @author BELLA
  */
 public class LeituraModel {
-    /* o que o looca pega
-    
-       Sistema sistema;
-       Memoria memoria;
-       Processador processador;
-       Temperatura temperatura;
-       DiscoGrupo grupoDeDiscos;
-       ServicoGrupo grupoDeServicos;
-       ProcessoGrupo grupoDeProcessos;*/
-    
-    /*tabela leitura
-    CREATE TABLE tbLeitura(
-	idLeitura INT PRIMARY KEY AUTO_INCREMENT,
-	leitura DOUBLE NOT NULL, 
-    dataHoraLeitura DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    fkConfig INT,
-		CONSTRAINT fkConfig 
-			FOREIGN KEY(fkConfig) REFERENCES tbConfig(idConfig),
-	fkAlertaComponente INT,
-		CONSTRAINT fkAlertaComponente
-			FOREIGN KEY(fkAlertaComponente) REFERENCES tbAlertaComponente(idAlertaComponente)
-);
-    
-    */    
-    private Double leitura;
 
-    public LeituraModel(Double leitura) {
+    private Integer leituraId;
+    private Double leitura;
+    private LocalDateTime dataHoraLeitura;
+    private Integer configFk;
+    private Integer alertaComponenteFk;
+
+    
+    public LeituraModel(Integer leituraId, Double leitura, Integer configFk, Integer alertaComponenteFk) {
+        this.leituraId = leituraId;
         this.leitura = leitura;
+        this.configFk = configFk;
+        this.alertaComponenteFk = alertaComponenteFk;
     }
 
     public LeituraModel() {
+
     }
-    
-    
+
+    public LocalDateTime getDataHoraLeitura() {
+        return dataHoraLeitura;
+    }
+
+    public Integer getLeituraId() {
+        return leituraId;
+    }
+
     public Double getLeitura() {
         return leitura;
+    }
+
+    public Integer getConfigFk() {
+        return configFk;
+    }
+
+    public Integer getAlertaComponenteFk() {
+        return alertaComponenteFk;
+    }
+
+    public void setDataHoraLeitura(LocalDateTime dataHoraLeitura) {
+        this.dataHoraLeitura = dataHoraLeitura;
+    }
+
+    public void setLeituraId(Integer leituraId) {
+        this.leituraId = leituraId;
     }
 
     public void setLeitura(Double leitura) {
         this.leitura = leitura;
     }
 
+    public void setConfigFk(Integer configFk) {
+        this.configFk = configFk;
+    }
+
+    public void setAlertaComponenteFk(Integer alertaComponenteFk) {
+        this.alertaComponenteFk = alertaComponenteFk;
+    }
+
     @Override
     public String toString() {
-        return "LeituraModel{" + "leitura=" + leitura + '}';
+        return "\nLeituraModel:"
+                + "\nleituraId: " + leituraId
+                + "\nleitura=" + leitura
+                + "\nconfigFk=" + configFk
+                + "\nalertaComponenteFk:" + alertaComponenteFk;
     }
-    
-    
-   
-    
-    
+
 }
