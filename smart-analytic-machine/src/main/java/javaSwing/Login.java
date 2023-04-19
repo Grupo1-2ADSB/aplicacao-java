@@ -23,7 +23,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class Login extends javax.swing.JFrame {
 
-    controller.ConexaoBanco conexao = new controller.ConexaoBanco();
+    service.ConexaoBancoService conexao = new service.ConexaoBancoService();
 
     JdbcTemplate con = conexao.getConnection();
 
