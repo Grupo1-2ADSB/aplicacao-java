@@ -87,25 +87,36 @@ public class LeituraController {
         //data e hora 
         leituraModel.setDataHoraLeitura(LocalDateTime.now());
 
-        //inserindo a leitura a memoria em uso do looca
+        //inserindo a leitura da memoria em uso do looca
         leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
 
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-//
-//        System.out.println("----------Memoria----------");
-//        System.out.println(leituraModel.getLeitura());
-//        
-//        //inserindo a leitura processador
-//        leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
-//
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-        System.out.println("----------Processador----------");
-//        System.out.println(leituraModel.getLeitura());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
 
-//        System.out.println(looca.getRede().getGrupoDeInterfaces().getInterfaces());
-//        System.out.println(looca.getRede().getParametros().getNomeDeDominio());
+        System.out.println("----------Memoria----------");
+        System.out.println(leituraModel.getLeitura());
+
+        //inserindo a leitura processador
+        leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
+
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+
+        System.out.println("----------Processador----------");
+        System.out.println(leituraModel.getLeitura());
+
+        //inserindo leitura de rede
+        
+        System.out.println("----------Rede----------");
+        System.out.println(looca.getRede().getGrupoDeInterfaces().getInterfaces());
+        System.out.println(looca.getRede().getParametros().getHostName());
+
+        //inserindo leitura de disco
+        System.out.println("----------Disco----------");
+        System.out.println(looca.getGrupoDeDiscos().getDiscos());
+        System.out.println(looca.getGrupoDeDiscos().getQuantidadeDeDiscos());
+        //System.out.println("----------fim disco-------");
+
         Double[] teste = new Double[8];
         List<Double> teste0 = new ArrayList<>();
         List<Double> teste1 = new ArrayList<>();
