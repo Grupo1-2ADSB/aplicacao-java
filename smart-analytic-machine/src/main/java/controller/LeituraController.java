@@ -54,62 +54,69 @@ public class LeituraController {
         List<ServicoGrupo> redeInterface = new ArrayList();
         List<Servico> servico = new ArrayList();
 
-//        // Instanciando Model de leitura - dados que vêm do looca
-//        LeituraModel leituraModel = new LeituraModel();
-//
-//        //data e hora 
-//        leituraModel.setDataHoraLeitura(LocalDateTime.now());
-//
-//        //inserindo a leitura da memoria em uso do looca
-//        System.out.println("----------Memoria----------");
-//
-//        //Uso memória
-//        leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-//
-//        //Memória disponível
-//        leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-//
-//        //Memória total
-//        leituraModel.setLeitura(looca.getMemoria().getTotal().doubleValue());
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-//
-//        //---------------------------------------------------------------------------//
-//        //inserindo a leitura processador
-//        System.out.println("----------Processador----------");
-//
-//        //Frequência processador
-//        leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-//
-//        //Uso processador
-//        leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-//
-//        //---------------------------------------------------------------------------//
-//        //inserindo a leitura rede
-//        System.out.println("----------Rede----------");
-//
-//        System.out.println(looca.getRede().getGrupoDeInterfaces().getInterfaces());
-//        System.out.println(looca.getRede().getParametros().getHostName());
-//
-//        //---------------------------------------------------------------------------//
-//        //inserindo leitura de disco
-//        System.out.println("----------Disco----------");
-//
-//        //Tamanho total disco
-//        leituraModel.setLeitura(looca.getGrupoDeDiscos().getTamanhoTotal().doubleValue());
-//        con.update("insert into tbLeitura values (?, ? ,?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
-        //System.out.println(looca.getGrupoDeDiscos().getTamanhoTotal());
+        // Instanciando Model de leitura - dados que vêm do looca
+        LeituraModel leituraModel = new LeituraModel();
+
+        //data e hora 
+        leituraModel.setDataHoraLeitura(LocalDateTime.now());
+
+        //inserindo a leitura da memoria em uso do looca
+        System.out.println("----------Memoria----------");
+
+        //Uso memória
+        leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+
+        System.out.println("Memória em uso: " + leituraModel.getLeitura());
+        
+        //Memória disponível
+        leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+
+        System.out.println("Memória Disponível: " + leituraModel.getLeitura());
+        
+        //Memória total
+        leituraModel.setLeitura(looca.getMemoria().getTotal().doubleValue());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+
+        System.out.println("Memória Total: " + leituraModel.getLeitura());
         //---------------------------------------------------------------------------//
-        //Tempo Ocioso
+        //inserindo a leitura processador
+        System.out.println("----------Processador----------");
+
+        //Frequência processador
+        leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+        System.out.println("Frequência do processador: " + leituraModel.getLeitura());
+
+        //Uso processador
+        leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+        System.out.println("Processador em uso" + leituraModel.getLeitura());
+        
+        //---------------------------------------------------------------------------//
+        // leitura rede
+        System.out.println("----------Rede----------");
+
+        System.out.println(looca.getRede().getGrupoDeInterfaces().getInterfaces());
+        System.out.println(looca.getRede().getParametros().getHostName());
+
+        //---------------------------------------------------------------------------//
+        //inserindo leitura de disco
+        System.out.println("----------Disco----------");
+
+        //Tamanho total disco
+        leituraModel.setLeitura(looca.getGrupoDeDiscos().getTamanhoTotal().doubleValue());
+        con.update("insert into tbLeitura values (?, ? ,?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+        System.out.println("Tamanho total do disco: " + looca.getGrupoDeDiscos().getTamanhoTotal());
+        //---------------------------------------------------------------------------//
+        
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
