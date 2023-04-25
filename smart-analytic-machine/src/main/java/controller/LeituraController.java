@@ -65,6 +65,7 @@ public class LeituraController {
 
         //Uso memória
         leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
+        
         con.update("insert into tbLeitura values (?, ? ,?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
 
@@ -72,6 +73,7 @@ public class LeituraController {
         
         //Memória disponível
         leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
+        
         con.update("insert into tbLeitura values (?, ? ,?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
 
@@ -79,6 +81,7 @@ public class LeituraController {
         
         //Memória total
         leituraModel.setLeitura(looca.getMemoria().getTotal().doubleValue());
+        
         con.update("insert into tbLeitura values (?, ? ,?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
 
@@ -89,14 +92,18 @@ public class LeituraController {
 
         //Frequência processador
         leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
+        
         con.update("insert into tbLeitura values (?, ? ,?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+        
         System.out.println("Frequência do processador: " + leituraModel.getLeitura());
 
         //Uso processador
         leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
+        
         con.update("insert into tbLeitura values (?, ? ,?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+        
         System.out.println("Processador em uso" + leituraModel.getLeitura());
         
         //---------------------------------------------------------------------------//
@@ -117,6 +124,47 @@ public class LeituraController {
         System.out.println("Tamanho total do disco: " + looca.getGrupoDeDiscos().getTamanhoTotal());
         //---------------------------------------------------------------------------//
         
+        // Listagem de Hardware
+        System.out.println("Listagem de hardware:");
+        
+        System.out.println("------------------Memória---------------------------");
+        System.out.println(looca.getMemoria().getTotal());
+        
+        
+        System.out.println("------------------Processador---------------------------");
+        System.out.println(looca.getProcessador().getNumeroCpusFisicas());
+        System.out.println(looca.getProcessador().getNumeroCpusLogicas());
+        
+        
+        System.out.println("------------------Disco---------------------------");
+        System.out.println(looca.getGrupoDeDiscos().getDiscos());
+        System.out.println(looca.getGrupoDeDiscos().getQuantidadeDeDiscos());
+        
+        
+        System.out.println("------------------Rede---------------------------");
+        System.out.println(looca.getRede().getParametros());
+        
+        
+        System.out.println("---------------------Sistema Operacional------------------------");
+        System.out.println(looca.getSistema().getSistemaOperacional());
+        System.out.println(looca.getSistema().getArquitetura());
+        
+        //---------------------------------------------------------------------------//
+        
+        
+        System.out.println("---------------------Listagem de Processos------------------------");
+        System.out.println(looca.getGrupoDeProcessos().getProcessos());
+        
+        
+        System.out.println("------------------Serviços---------------------------");
+        System.out.println(looca.getGrupoDeServicos().getServicosAtivos());
+        
+        
+        System.out.println("-----------------Janelas----------------------------");
+        System.out.println(looca.getGrupoDeJanelas().getTotalJanelasVisiveis());
+        System.out.println(looca.getGrupoDeJanelas().getJanelasVisiveis());
+        
+        //---------------------------------------------------------------------------//
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
