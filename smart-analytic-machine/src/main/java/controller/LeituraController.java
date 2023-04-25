@@ -143,15 +143,14 @@ public class LeituraController {
                 System.out.println("Arquitetura do sistema operacional: " + looca.getSistema().getArquitetura());
 
                 //---------------------------------------------------------------------------//
-                System.out.println("---------------------Listagem de Processos------------------------");
-                System.out.println("Processsos: " + looca.getGrupoDeProcessos().getProcessos());
-
-                System.out.println("------------------Serviços---------------------------");
-                System.out.println("Serviços ativos: " + looca.getGrupoDeServicos().getServicosAtivos());
-
                 System.out.println("-----------------Janelas----------------------------");
                 System.out.println("Total de janelas visíveis: " + looca.getGrupoDeJanelas().getTotalJanelasVisiveis());
 
+                System.out.println("------------------Serviços---------------------------");
+                System.out.println("Serviços ativos: " + looca.getGrupoDeServicos().getServicosAtivos());
+                
+                System.out.println("---------------------Listagem de Processos------------------------");
+                System.out.println("Processsos: " + looca.getGrupoDeProcessos().getProcessos());
                 //---------------------------------------------------------------------------//
             }
         }, 0, 10000);
