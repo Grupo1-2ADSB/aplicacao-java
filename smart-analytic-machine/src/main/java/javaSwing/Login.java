@@ -4,6 +4,8 @@
  */
 package javaSwing;
 
+import model.UsuarioModel;
+import controller.LeituraController;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -14,6 +16,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import model.MaquinaModel;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -26,6 +29,7 @@ public class Login extends javax.swing.JFrame {
     service.ConexaoBancoService conexao = new service.ConexaoBancoService();
 
     JdbcTemplate con = conexao.getConnection();
+    LeituraController leituraController = new LeituraController();
 
     /**
      * Creates new form Login
@@ -319,28 +323,28 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_iptPassActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        // TODO add your handling code here:
+
         String usuario = String.valueOf(iptUser.getText());
         String senha = String.valueOf(iptPass.getText());
 
-        Monitoramento monitoramento = new Monitoramento();
-
-//        System.out.println(usuario);
-//        System.out.println(senha);
-
-        List<LoginTeste> listaUsuario = new ArrayList();
-
-        listaUsuario = con.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
-                new BeanPropertyRowMapper(LoginTeste.class), usuario, senha);
-
+        //invocando o método selectDadosUsuario
+        List<UsuarioModel> listaUsuario = leituraController.selectDadosUsuario(usuario, senha);
+        System.out.println(listaUsuario);
+        
+        //invocando o método selectDadosMaquinaUsuario
+        List<MaquinaModel> listaMaquinaUsuario = leituraController.selectDadosMaquinaUsuario(listaUsuario.get(0).getIdUsuario());
+        System.out.println(listaMaquinaUsuario);
+        
+        
         if (listaUsuario.isEmpty()) {
-//            System.out.println("nao foi");
+
             JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
         } else {
-//            System.out.println(" foi");
+
             JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
             Login.this.dispose();
-            monitoramento.setVisible(true);
+
+            leituraController.inserirNoBanco();
         }
     }//GEN-LAST:event_btnEntrarActionPerformed
 

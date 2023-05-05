@@ -11,39 +11,63 @@ package model;
 public class ComponenteModel {
 
     private Integer componenteId;
-    private Integer tipoComponenteFk;
+    private String nomeComponente;
+    private Double capacidadeComponente;
+    private Integer fkTipoComponente;
 
-    public ComponenteModel(Integer componenteId, Integer tipoComponenteFk) {
+    public ComponenteModel(Integer componenteId, String nomeComponente,
+            Double capacidadeComponente, Integer fkTipoComponente) {
         this.componenteId = componenteId;
-        this.tipoComponenteFk = tipoComponenteFk;
+        this.nomeComponente = nomeComponente;
+        this.capacidadeComponente = capacidadeComponente;
+        this.fkTipoComponente = fkTipoComponente;
     }
 
     public ComponenteModel() {
     }
 
-    
-    
     public Integer getComponenteId() {
         return componenteId;
-    }
-
-    public Integer getTipoComponenteFk() {
-        return tipoComponenteFk;
     }
 
     public void setComponenteId(Integer componenteId) {
         this.componenteId = componenteId;
     }
 
-    public void setTipoComponenteFk(Integer tipoComponenteFk) {
-        this.tipoComponenteFk = tipoComponenteFk;
+    public String getNomeComponente() {
+        return nomeComponente;
+    }
+
+    public void setNomeComponente(String nomeComponente) {
+        this.nomeComponente = nomeComponente;
+    }
+
+    public Double getCapacidadeComponente() {
+        return capacidadeComponente;
+    }
+
+    public void setCapacidadeComponente(Double capacidadeComponente) {
+        this.capacidadeComponente = capacidadeComponente;
+    }
+
+    public Integer getfkTipoComponente() {
+        return fkTipoComponente;
+    }
+
+    public void setfkTipoComponente(Integer fkTipoComponente) {
+        this.fkTipoComponente = fkTipoComponente;
     }
 
     @Override
     public String toString() {
-        return "\nComponenteModel: \n"
-                + "componenteId: " + componenteId
-                + "\ntipoComponenteFk: " + tipoComponenteFk;
+        return String.format(
+                """
+         ComponenteModel
+         componenteId: %d | nomeComponente: %s
+         capacidadeComponente: %.1f | fkTipoComponente: %d
+         """
+                ,componenteId, nomeComponente,
+                capacidadeComponente, fkTipoComponente);
     }
 
 }

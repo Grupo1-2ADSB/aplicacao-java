@@ -23,7 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import model.ComponenteModel;
+import model.UsuarioModel;
 import model.LeituraModel;
+import model.MaquinaModel;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -32,7 +36,42 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class LeituraController {
 
-    public static void main(String[] args) {
+    //Instanciando conexao Banco
+    ConexaoBancoService conexao = new ConexaoBancoService();
+    JdbcTemplate con = conexao.getConnection();
+
+    public List<UsuarioModel> selectDadosUsuario(String usuario, String senha) {
+        
+        List<UsuarioModel> listaUsuario = new ArrayList();
+
+        listaUsuario = con.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
+                new BeanPropertyRowMapper(UsuarioModel.class), usuario, senha);
+
+        return listaUsuario;
+    }
+    
+    public List<MaquinaModel> selectDadosMaquinaUsuario(Integer fkUsuario) {
+        
+        List<MaquinaModel> listaMaquinaUsuario = new ArrayList();
+
+        listaMaquinaUsuario = con.query("select * from tbMaquina where fkUsuario = ?",
+                new BeanPropertyRowMapper(MaquinaModel.class), fkUsuario);
+
+        return listaMaquinaUsuario;
+    }
+    
+    /*public List<ComponenteModel> selectComponenteModel(Integer fkTipoComponente) {
+        
+        List<ComponenteModel> listaComponenteModel = new ArrayList();
+
+        listaComponenteModel = con.query("select * from tbMaquina where fkUsuario = ?",
+                new BeanPropertyRowMapper(ComponenteModel.class), fkTipoComponente);
+
+        return listaComponenteModel;
+    }*/
+    
+
+    public void inserirNoBanco() {
 
         //Instanciando conexao Banco
         ConexaoBancoService conexao = new ConexaoBancoService();
@@ -148,12 +187,11 @@ public class LeituraController {
 
                 System.out.println("------------------Serviços---------------------------");
                 System.out.println("Serviços ativos: " + looca.getGrupoDeServicos().getServicosAtivos());
-                
+
                 System.out.println("---------------------Listagem de Processos------------------------");
                 System.out.println("Processsos: " + looca.getGrupoDeProcessos().getProcessos());
                 //---------------------------------------------------------------------------//
             }
         }, 0, 10000);
-
     }
 }
