@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.memoria.Memoria;
 public class Logs {
-    private static final String LOG_DIR = "C:\\Users\\Lenovo\\Documents\\logs";
+    private static final String LOG_DIR = String.format("%s\\Documents\\logs", System.getProperty("user.home"));
+    //System.getProperty("user.home") -> Pega o caminho desde o C:/ até a pasta do usuário do sistema
     //private static final cria uma variavel que o valor não pode ser alterado depois de ser definido.
     
     private static String LOG_FILE = "";
