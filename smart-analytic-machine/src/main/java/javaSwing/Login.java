@@ -5,7 +5,7 @@
 package javaSwing;
 
 import model.UsuarioModel;
-import controller.LeituraController;
+import controller.Controller;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -16,7 +16,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import model.MaquinaModel;
+import model.LeituraUsuario;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -29,7 +29,7 @@ public class Login extends javax.swing.JFrame {
     service.ConexaoBancoService conexao = new service.ConexaoBancoService();
 
     JdbcTemplate con = conexao.getConnection();
-    LeituraController leituraController = new LeituraController();
+    Controller controller = new Controller();
 
     /**
      * Creates new form Login
@@ -328,13 +328,10 @@ public class Login extends javax.swing.JFrame {
         String senha = String.valueOf(iptPass.getText());
 
         //invocando o método selectDadosUsuario
-        List<UsuarioModel> listaUsuario = leituraController.selectDadosUsuario(usuario, senha);
+        List<UsuarioModel> listaUsuario = controller.selectDadosUsuario(usuario, senha);
         System.out.println(listaUsuario);
-        
-        //invocando o método selectDadosMaquinaUsuario
-        List<MaquinaModel> listaMaquinaUsuario = leituraController.selectDadosMaquinaUsuario(listaUsuario.get(0).getIdUsuario());
-        System.out.println(listaMaquinaUsuario);
-        
+ 
+        System.out.println(controller.select(usuario,senha));
         
         if (listaUsuario.isEmpty()) {
 
@@ -344,7 +341,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
             Login.this.dispose();
 
-            leituraController.inserirNoBanco();
+            //leituraController.inserirNoBanco();
         }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
