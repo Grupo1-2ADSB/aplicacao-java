@@ -125,7 +125,7 @@ public class Controller {
                 //Uso memória
                 leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
@@ -133,7 +133,7 @@ public class Controller {
                 //Memória disponível
                 leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Memória Disponível: " + leituraModel.getLeitura());
@@ -145,7 +145,7 @@ public class Controller {
                 //Frequência processador
                 leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Frequência do processador: " + leituraModel.getLeitura());
@@ -153,7 +153,7 @@ public class Controller {
                 //Uso processador
                 leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
@@ -172,7 +172,7 @@ public class Controller {
                 //Tamanho total disco
                 leituraModel.setLeitura(looca.getGrupoDeDiscos().getTamanhoTotal().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Tamanho total do disco: " + leituraModel.getLeitura());
