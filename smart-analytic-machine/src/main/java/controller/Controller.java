@@ -38,8 +38,8 @@ import service.ConexaoBancoNuvem;
 public class Controller {
 
     //Instanciando conexao Banco
-    ConexaoBancoLocal connectionLocal = new ConexaoBancoLocal();
-    JdbcTemplate con = connectionLocal.getConnection();
+//    ConexaoBancoLocal connectionLocal = new ConexaoBancoLocal();
+//    JdbcTemplate con = connectionLocal.getConnection();
 
     //Instanciando conexao Banco
     ConexaoBancoNuvem connectionNuvem = new ConexaoBancoNuvem();
@@ -66,23 +66,23 @@ public class Controller {
 
         List<UsuarioModel> listaUsuario = new ArrayList();
 
-        listaUsuario = con.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
+        listaUsuario = conNuvem.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
                 new BeanPropertyRowMapper(UsuarioModel.class), usuario, senha);
 
         return listaUsuario;
     }
 
-    public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
-
-        List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
-
-        listaLeituraUsuario = con.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
-                + " join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina "
-                + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc limit 1 ;",
-                new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
-
-        return listaLeituraUsuario;
-    }
+//    public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
+//
+//        List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
+//
+//        listaLeituraUsuario = con.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
+//                + " join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina "
+//                + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc limit 1 ;",
+//                new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
+//
+//        return listaLeituraUsuario;
+//    }
 
     public List<LeituraUsuario> selectLeituraUsuarioNuvem(String usuario, String senha) {
 
@@ -96,12 +96,12 @@ public class Controller {
         return listaLeituraUsuarioNuvem;
     }
 
-    public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
-
-        con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
-                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
-                fkConfig, fkAlertaComponente);
-    }
+//    public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
+//
+//        con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
+//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
+//                fkConfig, fkAlertaComponente);
+//    }
 
     public void insertTbLeituraNuvem(Integer fkConfig, Integer fkAlertaComponente) {
 
