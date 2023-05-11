@@ -26,9 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class Login extends javax.swing.JFrame {
 
-    service.ConexaoBancoLocal connectionLocal = new service.ConexaoBancoLocal();
 
-    JdbcTemplate con = connectionLocal.getConnection();
     Controller controller = new Controller();
     LeituraUsuario leituraUsuario = new LeituraUsuario();
 
