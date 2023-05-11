@@ -54,6 +54,7 @@ then
         echo "Abrindo a aplicação..."
         sleep 2
         cd aplicacao-java/smart-analytic-machine/target
+        sudo chmod 777 smart-analytic-machine-1.0-SNAPSHOT-jar-with-dependencies.jar
         java -jar smart-analytic-machine-1.0-SNAPSHOT-jar-with-dependencies.jar
         echo "Sucesso!"
 else 
