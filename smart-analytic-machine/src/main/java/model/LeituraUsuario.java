@@ -10,6 +10,7 @@ package model;
  */
 public class LeituraUsuario {
     
+    private Integer idLeitura;
     private Integer fkConfig;
     private Integer fkAlertaComponente;
     private Integer fkMaquina;
@@ -17,7 +18,8 @@ public class LeituraUsuario {
     private Integer nSerie;
     private String nomeUsuario;
 
-    public LeituraUsuario(Integer fkConfig, Integer fkAlertaComponente, Integer fkMaquina, Integer fkComponente, Integer nSerie, String nomeUsuario) {
+    public LeituraUsuario(Integer fkConfig, Integer fkAlertaComponente, Integer fkMaquina,
+            Integer fkComponente, Integer nSerie, String nomeUsuario) {
         this.fkConfig = fkConfig;
         this.fkAlertaComponente = fkAlertaComponente;
         this.fkMaquina = fkMaquina;
@@ -31,6 +33,15 @@ public class LeituraUsuario {
     public LeituraUsuario() {
     }
 
+    public Integer getIdLeitura() {
+        return idLeitura;
+    }
+
+    public void setIdLeitura(Integer idLeitura) {
+        this.idLeitura = idLeitura;
+    }
+
+    
     
     
     public Integer getFkConfig() {
@@ -83,8 +94,14 @@ public class LeituraUsuario {
 
     @Override
     public String toString() {
-        return "MaquinaModel{" + "fkConfig=" + fkConfig + ", fkAlertaComponente=" + fkAlertaComponente + ", fkMaquina=" + fkMaquina + ", fkComponente=" + fkComponente + ", nSerie=" + nSerie + ", nomeUsuario=" + nomeUsuario + '}';
+        return "LeituraUsuario{" + 
+                "\nidLeitura: " + idLeitura + 
+                "\nfkConfig: " + fkConfig + ", fkAlertaComponente: " + fkAlertaComponente
+                + "\n, fkMaquina: " + fkMaquina + ", fkComponente: " + fkComponente + 
+                "\n, nSerie: " + nSerie + ", nomeUsuario: " + nomeUsuario + "\n";
     }
+
+    
     
     
     

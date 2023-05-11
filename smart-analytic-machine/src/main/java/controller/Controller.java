@@ -5,7 +5,7 @@
 package controller;
 
 import com.github.britooo.looca.api.core.Looca;
-import service.ConexaoBancoService;
+import service.ConexaoBancoLocal;
 import java.time.LocalDateTime;
 import com.github.britooo.looca.api.util.Conversor;
 import static com.github.britooo.looca.api.util.Conversor.formatarBytes;
@@ -29,6 +29,7 @@ import model.LeituraModel;
 import model.LeituraUsuario;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import service.ConexaoBancoNuvem;
 
 /**
  *
@@ -37,8 +38,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class Controller {
 
     //Instanciando conexao Banco
-    ConexaoBancoService conexao = new ConexaoBancoService();
-    JdbcTemplate con = conexao.getConnection();
+    ConexaoBancoLocal connectionLocal = new ConexaoBancoLocal();
+    JdbcTemplate con = connectionLocal.getConnection();
+
+    //Instanciando conexao Banco
+    ConexaoBancoNuvem connectionNuvem = new ConexaoBancoNuvem();
+    JdbcTemplate conNuvem = connectionNuvem.getConnection();
+
+    // Instanciando Looca + Classes monitoradas
+    Looca looca = new Looca();
+
+    Conversor conversor = new Conversor();
+
+    Memoria memoria = new Memoria();
+    Processador processador = new Processador();
+    List<Rede> rede = new ArrayList();
+    DiscoGrupo discoGrupo = new DiscoGrupo();
+
+    Sistema sistema = new Sistema();
+    Temperatura temperatura = new Temperatura();
+    List<Disco> listaDisco = new ArrayList();
+
+    // Instanciando Model de leitura - dados que vêm do looca
+    LeituraModel leituraModel = new LeituraModel();
 
     public List<UsuarioModel> selectDadosUsuario(String usuario, String senha) {
 
@@ -50,43 +72,45 @@ public class Controller {
         return listaUsuario;
     }
 
-  public List<LeituraUsuario> select(String usuario, String senha ) {
-        
-        List<LeituraUsuario> listaMaquinaUsuario = new ArrayList();
+    public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
 
-        listaMaquinaUsuario = con.query
-        ("select fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
+        List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
+
+        listaLeituraUsuario = con.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
                 + " join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina "
-                + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ?;",
+                + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc limit 1 ;",
                 new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
 
-        return listaMaquinaUsuario;
+        return listaLeituraUsuario;
     }
 
-    public void inserirNoBanco() {
+    public List<LeituraUsuario> selectLeituraUsuarioNuvem(String usuario, String senha) {
 
-        //Instanciando conexao Banco
-        ConexaoBancoService conexao = new ConexaoBancoService();
-        JdbcTemplate con = conexao.getConnection();
+        List<LeituraUsuario> listaLeituraUsuarioNuvem = new ArrayList();
 
-        // Instanciando Looca + Classes monitoradas
-        Looca looca = new Looca();
+        listaLeituraUsuarioNuvem = conNuvem.query(
+                "select top 1 idLeitura, fkConfig, fkAlertaComponente ,c.fkMaquina, fkComponente ,nSerie , nomeUsuario"
+                + " from tbLeitura as l join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc ;",
+                new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
 
-        Conversor conversor = new Conversor();
+        return listaLeituraUsuarioNuvem;
+    }
 
-        Sistema sistema = new Sistema();
-        Memoria memoria = new Memoria();
-        Processador processador = new Processador();
-        ProcessoGrupo processoGrupo = new ProcessoGrupo();
-        Temperatura temperatura = new Temperatura();
-        List<Disco> listaDisco = new ArrayList();
-        DiscoGrupo discoGrupo = new DiscoGrupo();
-        List<Rede> rede = new ArrayList();
-        List<ServicoGrupo> redeInterface = new ArrayList();
-        List<Servico> servico = new ArrayList();
+    public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
-        // Instanciando Model de leitura - dados que vêm do looca
-        LeituraModel leituraModel = new LeituraModel();
+        con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
+                fkConfig, fkAlertaComponente);
+    }
+
+    public void insertTbLeituraNuvem(Integer fkConfig, Integer fkAlertaComponente) {
+
+        conNuvem.update("insert into tbLeitura(leitura, dataHoraLeitura , fkConfig, fkAlertaComponente) values (? ,? , ?, ?)",
+                leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
+                fkConfig, fkAlertaComponente);
+    }
+
+    public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -101,16 +125,16 @@ public class Controller {
                 //Uso memória
                 leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
 
-                con.update("insert into tbLeitura values (?, ? ,?)",
-                        null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
 
                 //Memória disponível
                 leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
 
-                con.update("insert into tbLeitura values (?, ? ,?)",
-                        null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Memória Disponível: " + leituraModel.getLeitura());
 
@@ -121,69 +145,40 @@ public class Controller {
                 //Frequência processador
                 leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
 
-                con.update("insert into tbLeitura values (?, ? ,?)",
-                        null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Frequência do processador: " + leituraModel.getLeitura());
 
                 //Uso processador
                 leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
 
-                con.update("insert into tbLeitura values (?, ? ,?)",
-                        null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
                 //---------------------------------------------------------------------------//
                 // leitura rede
-                System.out.println("----------Rede----------");
+                /*System.out.println("----------Rede----------");
 
                 System.out.println("Interfaces da rede: " + looca.getRede().getGrupoDeInterfaces().getInterfaces());
                 System.out.println("HostName: " + looca.getRede().getParametros().getHostName());
-
+                */
                 //---------------------------------------------------------------------------//
                 //inserindo leitura de disco
                 System.out.println("----------Disco----------");
 
                 //Tamanho total disco
                 leituraModel.setLeitura(looca.getGrupoDeDiscos().getTamanhoTotal().doubleValue());
-                con.update("insert into tbLeitura values (?, ? ,?)",
-                        null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura());
+
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+
                 System.out.println("Tamanho total do disco: " + leituraModel.getLeitura());
                 //---------------------------------------------------------------------------//
 
-                // Listagem de Hardware
-                System.out.println("\n\nListagem de hardware:");
-
-                System.out.println("------------------Memória---------------------------");
-                System.out.println("Memória total: " + looca.getMemoria().getTotal());
-
-                System.out.println("------------------Processador---------------------------");
-                System.out.println("Número de cpus Físicas: " + looca.getProcessador().getNumeroCpusFisicas());
-                System.out.println("Número de cpus Lógicas: " + looca.getProcessador().getNumeroCpusLogicas());
-
-                System.out.println("------------------Disco---------------------------");
-                System.out.println("Discos: " + looca.getGrupoDeDiscos().getDiscos());
-                System.out.println("Quantidade de discos: " + looca.getGrupoDeDiscos().getQuantidadeDeDiscos());
-
-                System.out.println("------------------Rede---------------------------");
-                System.out.println("Paramêtros da rede: " + looca.getRede().getParametros());
-
-                System.out.println("---------------------Sistema Operacional------------------------");
-                System.out.println("Sistema Operacional: " + looca.getSistema().getSistemaOperacional());
-                System.out.println("Arquitetura do sistema operacional: " + looca.getSistema().getArquitetura());
-
-                //---------------------------------------------------------------------------//
-                System.out.println("-----------------Janelas----------------------------");
-                System.out.println("Total de janelas visíveis: " + looca.getGrupoDeJanelas().getTotalJanelasVisiveis());
-
-                System.out.println("------------------Serviços---------------------------");
-                System.out.println("Serviços ativos: " + looca.getGrupoDeServicos().getServicosAtivos());
-
-                System.out.println("---------------------Listagem de Processos------------------------");
-                System.out.println("Processsos: " + looca.getGrupoDeProcessos().getProcessos());
-                //---------------------------------------------------------------------------//
             }
-        }, 0, 10000);
+        }, 0, 100000);
     }
 }

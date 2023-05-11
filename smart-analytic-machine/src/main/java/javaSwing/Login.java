@@ -26,10 +26,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class Login extends javax.swing.JFrame {
 
-    service.ConexaoBancoService conexao = new service.ConexaoBancoService();
+    service.ConexaoBancoLocal connectionLocal = new service.ConexaoBancoLocal();
 
-    JdbcTemplate con = conexao.getConnection();
+    JdbcTemplate con = connectionLocal.getConnection();
     Controller controller = new Controller();
+    LeituraUsuario leituraUsuario = new LeituraUsuario();
 
     /**
      * Creates new form Login
@@ -327,13 +328,21 @@ public class Login extends javax.swing.JFrame {
         String usuario = String.valueOf(iptUser.getText());
         String senha = String.valueOf(iptPass.getText());
 
-        //invocando o método selectDadosUsuario
+        //invocando o método selectDadosUsuario             
         List<UsuarioModel> listaUsuario = controller.selectDadosUsuario(usuario, senha);
         System.out.println(listaUsuario);
- 
-        System.out.println(controller.select(usuario,senha));
+
         
-        if (listaUsuario.isEmpty()) {
+        //invocando o método selectLeituraUsuario
+        /*List<LeituraUsuario> listaLeituraUsuario = controller.selectLeituraUsuario(usuario, senha);
+        System.out.println(listaLeituraUsuario);*/
+        
+        //invocando o método selectLeituraUsuario
+        List<LeituraUsuario> listaLeituraUsuarioNuvem = controller.selectLeituraUsuarioNuvem(usuario, senha);
+        System.out.println(listaLeituraUsuarioNuvem);
+        
+
+        /*if (listaUsuario.isEmpty()) {
 
             JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
         } else {
@@ -341,7 +350,18 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
             Login.this.dispose();
 
-            //leituraController.inserirNoBanco();
+            controller.inserirNoBancoLocal(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
+        }*/
+        
+        if (listaLeituraUsuarioNuvem.isEmpty()) {
+
+            JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
+        } else {
+
+            JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
+            Login.this.dispose();
+
+            controller.inserirNoBanco(listaLeituraUsuarioNuvem.get(0).getFkConfig(), listaLeituraUsuarioNuvem.get(0).getFkComponente());
         }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
