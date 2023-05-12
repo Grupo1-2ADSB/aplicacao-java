@@ -332,15 +332,15 @@ public class Login extends javax.swing.JFrame {
 
         
         //invocando o método selectLeituraUsuario
-        /*List<LeituraUsuario> listaLeituraUsuario = controller.selectLeituraUsuario(usuario, senha);
-        System.out.println(listaLeituraUsuario);*/
+        List<LeituraUsuario> listaLeituraUsuario = controller.selectLeituraUsuario(usuario, senha);
+        System.out.println(listaLeituraUsuario);
         
-        //invocando o método selectLeituraUsuario
+        //invocando o método selectLeituraUsuarioNuvem
         List<LeituraUsuario> listaLeituraUsuarioNuvem = controller.selectLeituraUsuarioNuvem(usuario, senha);
         System.out.println(listaLeituraUsuarioNuvem);
         
 
-        /*if (listaUsuario.isEmpty()) {
+        if (listaUsuario.isEmpty()) {
 
             JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
         } else {
@@ -348,8 +348,8 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
             Login.this.dispose();
 
-            controller.inserirNoBancoLocal(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
-        }*/
+            controller.inserirNoBanco(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
+        }
         
         if (listaLeituraUsuarioNuvem.isEmpty()) {
 

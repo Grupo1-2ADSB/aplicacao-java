@@ -37,9 +37,9 @@ import service.ConexaoBancoNuvem;
  */
 public class Controller {
 
-    //Instanciando conexao Banco
-//    ConexaoBancoLocal connectionLocal = new ConexaoBancoLocal();
-//    JdbcTemplate con = connectionLocal.getConnection();
+    //Instanciando conexao Banco Local
+    ConexaoBancoLocal connectionLocal = new ConexaoBancoLocal();
+    JdbcTemplate con = connectionLocal.getConnection();
 
     //Instanciando conexao Banco
     ConexaoBancoNuvem connectionNuvem = new ConexaoBancoNuvem();
@@ -61,8 +61,20 @@ public class Controller {
 
     // Instanciando Model de leitura - dados que vêm do looca
     LeituraModel leituraModel = new LeituraModel();
+    
 
     public List<UsuarioModel> selectDadosUsuario(String usuario, String senha) {
+
+        List<UsuarioModel> listaUsuario = new ArrayList();
+
+        listaUsuario = con.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
+                new BeanPropertyRowMapper(UsuarioModel.class), usuario, senha);
+
+        return listaUsuario;
+    }
+    
+    
+    public List<UsuarioModel> selectDadosUsuarioNuvem(String usuario, String senha) {
 
         List<UsuarioModel> listaUsuario = new ArrayList();
 
@@ -72,17 +84,19 @@ public class Controller {
         return listaUsuario;
     }
 
-//    public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
-//
-//        List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
-//
-//        listaLeituraUsuario = con.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
-//                + " join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina "
-//                + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc limit 1 ;",
-//                new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
-//
-//        return listaLeituraUsuario;
-//    }
+    
+    
+    public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
+
+        List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
+
+        listaLeituraUsuario = con.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
+                + " join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina "
+                + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc limit 1 ;",
+                new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
+
+        return listaLeituraUsuario;
+    }
 
     public List<LeituraUsuario> selectLeituraUsuarioNuvem(String usuario, String senha) {
 
@@ -95,20 +109,24 @@ public class Controller {
 
         return listaLeituraUsuarioNuvem;
     }
+    
 
-//    public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
-//
-//        con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
-//                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
-//                fkConfig, fkAlertaComponente);
-//    }
+    public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
+        con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
+                null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
+                fkConfig, fkAlertaComponente);
+    }
+
+    
     public void insertTbLeituraNuvem(Integer fkConfig, Integer fkAlertaComponente) {
 
         conNuvem.update("insert into tbLeitura(leitura, dataHoraLeitura , fkConfig, fkAlertaComponente) values (? ,? , ?, ?)",
                 leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
                 fkConfig, fkAlertaComponente);
     }
+    
+    
 
     public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
 
@@ -125,7 +143,7 @@ public class Controller {
                 //Uso memória
                 leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
 
-                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
@@ -133,7 +151,7 @@ public class Controller {
                 //Memória disponível
                 leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
 
-                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Memória Disponível: " + leituraModel.getLeitura());
@@ -145,7 +163,7 @@ public class Controller {
                 //Frequência processador
                 leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
 
-                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Frequência do processador: " + leituraModel.getLeitura());
@@ -153,7 +171,7 @@ public class Controller {
                 //Uso processador
                 leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
 
-                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
@@ -172,7 +190,7 @@ public class Controller {
                 //Tamanho total disco
                 leituraModel.setLeitura(looca.getGrupoDeDiscos().getTamanhoTotal().doubleValue());
 
-                //insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 System.out.println("Tamanho total do disco: " + leituraModel.getLeitura());
