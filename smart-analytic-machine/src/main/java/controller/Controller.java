@@ -76,15 +76,16 @@ public class Controller {
     
     public List<UsuarioModel> selectDadosUsuarioNuvem(String usuario, String senha) {
 
-        List<UsuarioModel> listaUsuario = new ArrayList();
+        List<UsuarioModel> listaUsuarioNuvem = new ArrayList();
 
-        listaUsuario = conNuvem.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
+        listaUsuarioNuvem = conNuvem.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
                 new BeanPropertyRowMapper(UsuarioModel.class), usuario, senha);
 
-        return listaUsuario;
+        return listaUsuarioNuvem;
     }
 
     
+    /*-----------------------------------------------------------------------------------*/
     
     public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
 
@@ -110,7 +111,9 @@ public class Controller {
         return listaLeituraUsuarioNuvem;
     }
     
-
+   /*----------------------------------------------------------------------------*/
+    
+    
     public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
         con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
@@ -126,8 +129,10 @@ public class Controller {
                 fkConfig, fkAlertaComponente);
     }
     
+     
+     /*--------------------------------------------------------------------------------*/
     
-
+    
     public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
 
         new Timer().scheduleAtFixedRate(new TimerTask() {

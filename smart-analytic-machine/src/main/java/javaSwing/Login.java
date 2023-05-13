@@ -26,9 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class Login extends javax.swing.JFrame {
 
-
     Controller controller = new Controller();
-    LeituraUsuario leituraUsuario = new LeituraUsuario();
 
     /**
      * Creates new form Login
@@ -325,11 +323,17 @@ public class Login extends javax.swing.JFrame {
 
         String usuario = String.valueOf(iptUser.getText());
         String senha = String.valueOf(iptPass.getText());
-
+        
+        /*-------------------------------------------------------------------------*/
         //invocando o método selectDadosUsuario             
         List<UsuarioModel> listaUsuario = controller.selectDadosUsuario(usuario, senha);
         System.out.println(listaUsuario);
-
+        
+        //invocando o método selectDadosUsuario             
+        List<UsuarioModel> listaUsuarioNuvem = controller.selectDadosUsuarioNuvem(usuario, senha);
+        System.out.println(listaUsuarioNuvem);
+ 
+        /*-------------------------------------------------------------------------*/
         
         //invocando o método selectLeituraUsuario
         List<LeituraUsuario> listaLeituraUsuario = controller.selectLeituraUsuario(usuario, senha);
@@ -339,6 +343,7 @@ public class Login extends javax.swing.JFrame {
         List<LeituraUsuario> listaLeituraUsuarioNuvem = controller.selectLeituraUsuarioNuvem(usuario, senha);
         System.out.println(listaLeituraUsuarioNuvem);
         
+        /*-----------------------------------------------------------------------------*/
 
         if (listaUsuario.isEmpty()) {
 
@@ -351,7 +356,7 @@ public class Login extends javax.swing.JFrame {
             controller.inserirNoBanco(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
         }
         
-        if (listaLeituraUsuarioNuvem.isEmpty()) {
+        if (listaUsuarioNuvem.isEmpty()) {
 
             JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
         } else {
