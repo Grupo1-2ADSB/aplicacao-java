@@ -5,25 +5,14 @@
 package controller;
 
 import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.discos.Volume;
+import com.github.britooo.looca.api.group.rede.RedeInterface;
 import service.ConexaoBancoLocal;
 import java.time.LocalDateTime;
-import com.github.britooo.looca.api.util.Conversor;
-import static com.github.britooo.looca.api.util.Conversor.formatarBytes;
-import com.github.britooo.looca.api.group.discos.Disco;
-import com.github.britooo.looca.api.group.discos.DiscoGrupo;
-import com.github.britooo.looca.api.group.memoria.Memoria;
-import com.github.britooo.looca.api.group.processador.Processador;
-import com.github.britooo.looca.api.group.processos.ProcessoGrupo;
-import com.github.britooo.looca.api.group.rede.Rede;
-import com.github.britooo.looca.api.group.servicos.Servico;
-import com.github.britooo.looca.api.group.servicos.ServicoGrupo;
-import com.github.britooo.looca.api.group.sistema.Sistema;
-import com.github.britooo.looca.api.group.temperatura.Temperatura;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import model.LeituraComponente;
 import model.UsuarioModel;
 import model.LeituraModel;
 import model.LeituraUsuario;
@@ -48,20 +37,14 @@ public class Controller {
     // Instanciando Looca + Classes monitoradas
     Looca looca = new Looca();
 
-    Conversor conversor = new Conversor();
-
-    Memoria memoria = new Memoria();
-    Processador processador = new Processador();
-    List<Rede> rede = new ArrayList();
-    DiscoGrupo discoGrupo = new DiscoGrupo();
-
-    Sistema sistema = new Sistema();
-    Temperatura temperatura = new Temperatura();
-    List<Disco> listaDisco = new ArrayList();
-
     // Instanciando Model de leitura - dados que vêm do looca
     LeituraModel leituraModel = new LeituraModel();
-    
+
+    //Grupo de discos
+    List<Volume> listaDiscos = new ArrayList(looca.getGrupoDeDiscos().getVolumes());
+
+    //Grupo de redes internet e wi-fi
+    List<RedeInterface> listaRedes = new ArrayList(looca.getRede().getGrupoDeInterfaces().getInterfaces());
 
     public List<UsuarioModel> selectDadosUsuario(String usuario, String senha) {
 
@@ -72,8 +55,7 @@ public class Controller {
 
         return listaUsuario;
     }
-    
-    
+
     public List<UsuarioModel> selectDadosUsuarioNuvem(String usuario, String senha) {
 
         List<UsuarioModel> listaUsuarioNuvem = new ArrayList();
@@ -84,9 +66,7 @@ public class Controller {
         return listaUsuarioNuvem;
     }
 
-    
     /*-----------------------------------------------------------------------------------*/
-    
     public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
 
         List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
@@ -110,10 +90,8 @@ public class Controller {
 
         return listaLeituraUsuarioNuvem;
     }
-    
-   /*----------------------------------------------------------------------------*/
-    
-    
+
+    /*----------------------------------------------------------------------------*/
     public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
         con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
@@ -121,18 +99,14 @@ public class Controller {
                 fkConfig, fkAlertaComponente);
     }
 
-    
     public void insertTbLeituraNuvem(Integer fkConfig, Integer fkAlertaComponente) {
 
         conNuvem.update("insert into tbLeitura(leitura, dataHoraLeitura , fkConfig, fkAlertaComponente) values (? ,? , ?, ?)",
                 leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
                 fkConfig, fkAlertaComponente);
     }
-    
-     
-     /*--------------------------------------------------------------------------------*/
-    
-    
+
+    /*--------------------------------------------------------------------------------*/
     public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -142,64 +116,52 @@ public class Controller {
                 //data e hora 
                 leituraModel.setDataHoraLeitura(LocalDateTime.now());
 
-                //inserindo a leitura da memoria em uso do looca
-                System.out.println("----------Memoria----------");
-
                 //Uso memória
                 leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
-
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
 
-                //Memória disponível
-                leituraModel.setLeitura(looca.getMemoria().getDisponivel().doubleValue());
-
                 insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
-
-                System.out.println("Memória Disponível: " + leituraModel.getLeitura());
 
                 //---------------------------------------------------------------------------//
-                //inserindo a leitura processador
-                System.out.println("----------Processador----------");
+                //Discos em uso
+                for (Volume disco : listaDiscos) {
 
-                //Frequência processador
-                leituraModel.setLeitura(looca.getProcessador().getFrequencia().doubleValue());
+                    leituraModel.setLeitura(disco.getTotal().doubleValue()
+                            - disco.getDisponivel().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+                    System.out.println("Em uso do disco " + disco.getNome() + " "
+                            + leituraModel.getLeitura());
 
-                System.out.println("Frequência do processador: " + leituraModel.getLeitura());
+                    insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                    insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
+                }
+
+                //Redes em uso internet e wi-fi
+                for (int i = 4; i > 2; i--) {
+
+                    leituraModel.setLeitura(listaRedes.get(i).getBytesRecebidos().doubleValue());
+
+                    System.out.println("Em uso da rede: " + listaRedes.get(i).getNome() + " : "
+                            + leituraModel.getLeitura());
+
+                    insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                    insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+
+                }
+
+                //---------------------------------------------------------------------------//
                 //Uso processador
                 leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
-
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
-                //---------------------------------------------------------------------------//
-                // leitura rede
-                /*System.out.println("----------Rede----------");
-
-                System.out.println("Interfaces da rede: " + looca.getRede().getGrupoDeInterfaces().getInterfaces());
-                System.out.println("HostName: " + looca.getRede().getParametros().getHostName());
-                */
-                //---------------------------------------------------------------------------//
-                //inserindo leitura de disco
-                System.out.println("----------Disco----------");
-
-                //Tamanho total disco
-                leituraModel.setLeitura(looca.getGrupoDeDiscos().getTamanhoTotal().doubleValue());
-
                 insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
-
-                System.out.println("Tamanho total do disco: " + leituraModel.getLeitura());
-                //---------------------------------------------------------------------------//
+                
+               
 
             }
         }, 0, 100000);

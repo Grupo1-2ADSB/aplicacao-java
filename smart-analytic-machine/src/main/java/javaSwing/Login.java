@@ -11,14 +11,12 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import model.LeituraUsuario;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+
 
 /**
  *
@@ -332,7 +330,7 @@ public class Login extends javax.swing.JFrame {
         //invocando o método selectDadosUsuario             
         List<UsuarioModel> listaUsuarioNuvem = controller.selectDadosUsuarioNuvem(usuario, senha);
         System.out.println(listaUsuarioNuvem);
- 
+
         /*-------------------------------------------------------------------------*/
         
         //invocando o método selectLeituraUsuario
@@ -345,7 +343,7 @@ public class Login extends javax.swing.JFrame {
         
         /*-----------------------------------------------------------------------------*/
 
-        if (listaUsuario.isEmpty()) {
+        if (listaUsuario.isEmpty() || listaUsuarioNuvem.isEmpty() ) {
 
             JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
         } else {
@@ -356,16 +354,6 @@ public class Login extends javax.swing.JFrame {
             controller.inserirNoBanco(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
         }
         
-        if (listaUsuarioNuvem.isEmpty()) {
-
-            JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
-        } else {
-
-            JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
-            Login.this.dispose();
-
-            controller.inserirNoBanco(listaLeituraUsuarioNuvem.get(0).getFkConfig(), listaLeituraUsuarioNuvem.get(0).getFkComponente());
-        }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void btnEntrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEntrarMouseEntered
