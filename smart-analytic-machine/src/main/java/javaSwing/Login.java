@@ -324,7 +324,7 @@ public class Login extends javax.swing.JFrame {
         
         /*-------------------------------------------------------------------------*/
         //invocando o método selectDadosUsuario             
-        List<UsuarioModel> listaUsuario = controller.selectDadosUsuario(usuario, senha);
+        List<UsuarioModel> listaUsuario = controller.selectDadosUsuarioLocal(usuario, senha);
         System.out.println(listaUsuario);
         
         //invocando o método selectDadosUsuario             

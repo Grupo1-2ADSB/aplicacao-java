@@ -26,18 +26,18 @@ import service.ConexaoBancoNuvem;
  */
 public class Controller {
 
-    //Instanciando conexao Banco Local
+    //Instanciando conexao Banco Local - Mysql
     ConexaoBancoLocal connectionLocal = new ConexaoBancoLocal();
-    JdbcTemplate con = connectionLocal.getConnection();
+    JdbcTemplate conLocal = connectionLocal.getConnection();
 
-    //Instanciando conexao Banco
+    //Instanciando conexao Banco Nuvem - Azure
     ConexaoBancoNuvem connectionNuvem = new ConexaoBancoNuvem();
     JdbcTemplate conNuvem = connectionNuvem.getConnection();
 
-    // Instanciando Looca + Classes monitoradas
+    //Instanciando Looca + Classes monitoradas
     Looca looca = new Looca();
 
-    // Instanciando Model de leitura - dados que vêm do looca
+    //Instanciando Model de leitura - dados que vêm do looca
     LeituraModel leituraModel = new LeituraModel();
 
     //Grupo de discos
@@ -46,16 +46,19 @@ public class Controller {
     //Grupo de redes internet e wi-fi
     List<RedeInterface> listaRedes = new ArrayList(looca.getRede().getGrupoDeInterfaces().getInterfaces());
 
-    public List<UsuarioModel> selectDadosUsuario(String usuario, String senha) {
+   
+    //Select de dados do usuário - Login Local
+    public List<UsuarioModel> selectDadosUsuarioLocal(String usuario, String senha) {
 
         List<UsuarioModel> listaUsuario = new ArrayList();
 
-        listaUsuario = con.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
+        listaUsuario = conLocal.query("SELECT * FROM tbUsuario WHERE nomeUsuario = ? AND senhaUsuario = ?",
                 new BeanPropertyRowMapper(UsuarioModel.class), usuario, senha);
 
         return listaUsuario;
     }
 
+    //Select de dados do usuário - Login Nuvem
     public List<UsuarioModel> selectDadosUsuarioNuvem(String usuario, String senha) {
 
         List<UsuarioModel> listaUsuarioNuvem = new ArrayList();
@@ -67,11 +70,13 @@ public class Controller {
     }
 
     /*-----------------------------------------------------------------------------------*/
+    
+    //Leituras do usuário - local
     public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
 
         List<LeituraUsuario> listaLeituraUsuario = new ArrayList();
 
-        listaLeituraUsuario = con.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
+        listaLeituraUsuario = conLocal.query("select idLeitura , fkConfig, fkAlertaComponente , c.fkMaquina, fkComponente , nSerie ,  nomeUsuario from tbLeitura as l"
                 + " join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina "
                 + "join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc limit 1 ;",
                 new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
@@ -79,6 +84,7 @@ public class Controller {
         return listaLeituraUsuario;
     }
 
+    //Leituras do usuário - nuvem
     public List<LeituraUsuario> selectLeituraUsuarioNuvem(String usuario, String senha) {
 
         List<LeituraUsuario> listaLeituraUsuarioNuvem = new ArrayList();
@@ -92,13 +98,16 @@ public class Controller {
     }
 
     /*----------------------------------------------------------------------------*/
+    
+    //Inserção de leituras - Local
     public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
-        con.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
+        conLocal.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
                 fkConfig, fkAlertaComponente);
     }
 
+    //Inserção de leituras - Nuvem
     public void insertTbLeituraNuvem(Integer fkConfig, Integer fkAlertaComponente) {
 
         conNuvem.update("insert into tbLeitura(leitura, dataHoraLeitura , fkConfig, fkAlertaComponente) values (? ,? , ?, ?)",
@@ -107,6 +116,8 @@ public class Controller {
     }
 
     /*--------------------------------------------------------------------------------*/
+    
+    //Método de inserção no banco com timer task para inserir a cada x tempo
     public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -140,10 +151,16 @@ public class Controller {
                 }
 
                 //Redes em uso internet e wi-fi
-                for (int i = 4; i > 2; i--) {
+                System.out.println(listaRedes.size());
+                for (int i = listaRedes.size() -1 ; i >= 0; i--) {
+                System.out.println(listaRedes.get(i));
 
                     leituraModel.setLeitura(listaRedes.get(i).getBytesRecebidos().doubleValue());
+                    leituraModel.setLeitura(listaRedes.get(i).getBytesEnviados().doubleValue());
 
+                    System.out.println("Bytes recebidos: " + listaRedes.get(i).getBytesRecebidos().doubleValue());
+                    System.out.println("Bytes enviados: " + listaRedes.get(i).getBytesEnviados().doubleValue());
+                    
                     System.out.println("Em uso da rede: " + listaRedes.get(i).getNome() + " : "
                             + leituraModel.getLeitura());
 
@@ -160,9 +177,6 @@ public class Controller {
 
                 insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
-                
-               
-
             }
         }, 0, 100000);
     }

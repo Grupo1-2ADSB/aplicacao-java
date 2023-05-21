@@ -17,7 +17,6 @@ public class LeituraModel {
     private Integer configFk;
     private Integer alertaComponenteFk;
 
-    
     public LeituraModel(Integer leituraId, Double leitura, Integer configFk, Integer alertaComponenteFk) {
         this.leituraId = leituraId;
         this.leitura = leitura;
@@ -77,5 +76,4 @@ public class LeituraModel {
                 + "\nconfigFk=" + configFk
                 + "\nalertaComponenteFk:" + alertaComponenteFk;
     }
-
 }
