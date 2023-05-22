@@ -46,7 +46,6 @@ public class Controller {
     //Grupo de redes internet e wi-fi
     List<RedeInterface> listaRedes = new ArrayList(looca.getRede().getGrupoDeInterfaces().getInterfaces());
 
-   
     //Select de dados do usuário - Login Local
     public List<UsuarioModel> selectDadosUsuarioLocal(String usuario, String senha) {
 
@@ -70,7 +69,6 @@ public class Controller {
     }
 
     /*-----------------------------------------------------------------------------------*/
-    
     //Leituras do usuário - local
     public List<LeituraUsuario> selectLeituraUsuario(String usuario, String senha) {
 
@@ -98,7 +96,6 @@ public class Controller {
     }
 
     /*----------------------------------------------------------------------------*/
-    
     //Inserção de leituras - Local
     public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
@@ -116,7 +113,6 @@ public class Controller {
     }
 
     /*--------------------------------------------------------------------------------*/
-    
     //Método de inserção no banco com timer task para inserir a cada x tempo
     public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
 
@@ -152,21 +148,26 @@ public class Controller {
 
                 //Redes em uso internet e wi-fi
                 System.out.println(listaRedes.size());
-                for (int i = listaRedes.size() -1 ; i >= 0; i--) {
-                System.out.println(listaRedes.get(i));
+                for (int i = listaRedes.size() - 1; i >= 0; i--) {
 
-                    leituraModel.setLeitura(listaRedes.get(i).getBytesRecebidos().doubleValue());
-                    leituraModel.setLeitura(listaRedes.get(i).getBytesEnviados().doubleValue());
+                    if (listaRedes.get(i).getBytesRecebidos().doubleValue() != 0
+                            && listaRedes.get(i).getBytesEnviados().doubleValue() != 0) {
 
-                    System.out.println("Bytes recebidos: " + listaRedes.get(i).getBytesRecebidos().doubleValue());
-                    System.out.println("Bytes enviados: " + listaRedes.get(i).getBytesEnviados().doubleValue());
-                    
-                    System.out.println("Em uso da rede: " + listaRedes.get(i).getNome() + " : "
-                            + leituraModel.getLeitura());
+                        leituraModel.setLeitura(listaRedes.get(i).getBytesRecebidos().doubleValue());
+                        leituraModel.setLeitura(listaRedes.get(i).getBytesEnviados().doubleValue());
 
-                    insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                    insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+                        System.out.println("-----------------------------------------------------");
+                        System.out.println("Em uso da rede: " + listaRedes.get(i).getNome() + " : "
+                                + leituraModel.getLeitura());
 
+                        System.out.println("Bytes recebidos: " + listaRedes.get(i).getBytesRecebidos().doubleValue());
+                        System.out.println("Bytes enviados: " + listaRedes.get(i).getBytesEnviados().doubleValue());
+                        System.out.println("-----------------------------------------------------");
+
+                        insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+                        insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+
+                    }
                 }
 
                 //---------------------------------------------------------------------------//
