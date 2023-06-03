@@ -5,6 +5,7 @@
 package javaSwing;
 
 import model.UsuarioModel;
+import logs.Logs;
 import controller.Controller;
 import java.awt.Color;
 import java.awt.GradientPaint;
@@ -352,6 +353,7 @@ public class Login extends javax.swing.JFrame {
             Login.this.dispose();
 
             controller.inserirNoBanco(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
+             try { Logs.startLogging();} catch (InterruptedException e) { e.printStackTrace();}
         }
         
     }//GEN-LAST:event_btnEntrarActionPerformed

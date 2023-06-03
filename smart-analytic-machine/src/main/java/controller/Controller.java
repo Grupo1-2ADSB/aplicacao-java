@@ -7,6 +7,7 @@ package controller;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
+import java.text.DecimalFormat;
 import service.ConexaoBancoLocal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class Controller {
     //Instanciando Looca + Classes monitoradas
     Looca looca = new Looca();
 
+    DecimalFormat df = new DecimalFormat("##.00");
+    
+    
     //Instanciando Model de leitura - dados que vêm do looca
     LeituraModel leituraModel = new LeituraModel();
 
@@ -135,8 +139,9 @@ public class Controller {
                 //Discos em uso
                 for (Volume disco : listaDiscos) {
 
-                    leituraModel.setLeitura(disco.getTotal().doubleValue()
-                            - disco.getDisponivel().doubleValue());
+                    
+                    leituraModel.setLeitura((disco.getTotal().doubleValue()
+                            - disco.getDisponivel().doubleValue()));
 
                     System.out.println("Em uso do disco " + disco.getNome() + " "
                             + leituraModel.getLeitura());

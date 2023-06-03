@@ -24,7 +24,7 @@ public class ConexaoBancoLocal {
         
         dataSource​.setUsername("root");
 
-        dataSource​.setPassword("Gfgrupo1");
+        dataSource​.setPassword("root");
 
         this.connectionLocal = new JdbcTemplate(dataSource);
 
