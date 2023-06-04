@@ -352,7 +352,8 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(jPanelParent, String.format(("Bem-vindo de volta, %s!"), usuario), "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
             Login.this.dispose();
 
-            controller.inserirNoBanco(listaLeituraUsuario.get(0).getFkConfig(), listaLeituraUsuario.get(0).getFkComponente());
+            controller.inserirNoBanco();
+            
              try { Logs.startLogging();} catch (InterruptedException e) { e.printStackTrace();}
         }
         

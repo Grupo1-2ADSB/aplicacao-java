@@ -105,8 +105,8 @@ public class Controller {
         for (int i = 0; i < listaLeituraUsuarioNuvem.size(); i++) {
             nSerie = listaLeituraUsuarioNuvem.get(i).getnSerie();
         }
-        
-        System.out.println("nSerie"+nSerie);
+
+        System.out.println("nSerie" + nSerie);
 
         return listaLeituraUsuarioNuvem;
     }
@@ -115,7 +115,7 @@ public class Controller {
     //Inserção de leituras - Local
     public void insertTbLeituraLocal(Integer fkConfig, Integer fkAlertaComponente) {
 
-        conLocal.update("insert into tbLeitura values (?, ? ,? , ?, ?)",
+        conLocal.update("insert into tbLeitura(idLeitura ,leitura, dataHoraLeitura , fkConfig, fkAlertaComponente values (? ,? , ?, ?, ?)",
                 null, leituraModel.getLeitura(), leituraModel.getDataHoraLeitura(),
                 fkConfig, fkAlertaComponente);
     }
@@ -156,18 +156,18 @@ public class Controller {
             System.out.println(String.format("comp: %s \nsigla: %s", maqUni.get(i).getTipoComponente(), maqUni.get(i).getSigla()));
             if (maqUni.get(i).getTipoComponente().equalsIgnoreCase("Memória RAM") && leitura.equalsIgnoreCase("memoria")) {
 //                if (maqUni.get(i).getSigla().equalsIgnoreCase("GB")) {
-                    leituraFormatada = conversor.formatarBytes(valor);
-                    System.out.println(leituraFormatada);
+                leituraFormatada = conversor.formatarBytes(valor);
+                //System.out.println(leituraFormatada);
 //                }
             } else if (maqUni.get(i).getTipoComponente().equalsIgnoreCase("Placa de rede") && leitura.equalsIgnoreCase("rede")) {
                 leituraFormatada = Long.toString((valor * 8) / 1000000);
             } else if (maqUni.get(i).getTipoComponente().equalsIgnoreCase("Disco Rígido") && leitura.equalsIgnoreCase("disco")) {
                 if (maqUni.get(i).getSigla().equalsIgnoreCase("GB")) {
                     leituraFormatada = conversor.formatarBytes(valor);
-                    System.out.println(leituraFormatada);
+                    //System.out.println(leituraFormatada);
                 } else {
                     leituraFormatada = Long.toString(valor / 1099511627);
-                    System.out.println(leituraFormatada);
+                    //System.out.println(leituraFormatada);
                 }
             }
         }
@@ -178,7 +178,7 @@ public class Controller {
 
     /*--------------------------------------------------------------------------------*/
     //Método de inserção no banco com timer task para inserir a cada x tempo
-    public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
+    public void inserirNoBanco() {
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -186,21 +186,42 @@ public class Controller {
 
                 //data e hora 
                 leituraModel.setDataHoraLeitura(LocalDateTime.now());
-                
-                System.out.println("teste"+looca.getMemoria().getEmUso());
+
+                System.out.println("teste" + looca.getMemoria().getEmUso());
 
                 String leituraMemoriaFormatada = converterUnidadeMedida(looca.getMemoria().getEmUso(), "Memoria");
 
-                System.out.println("leituraMemoriaFormatada"+leituraMemoriaFormatada);
+                System.out.println("leituraMemoriaFormatada" + leituraMemoriaFormatada);
 
                 leituraModel.setLeitura(leituraMemoriaFormatada);
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
-//                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+
+                /*-------------------------------------------------------------------------*/
+                List<MaquinaUnidade> listaMaquina = selectDadosUnidadeMedidaNuvem(nSerie);
+
+                System.out.println("\nLISTA MAQUINA " + listaMaquina + "\n");
+                Boolean jaInseriuRam = true;
+                Integer fkAlerta = 1;
+                /*chumbado por enquanto*/
+
+                for (MaquinaUnidade maquinaDaVez : listaMaquina) {
+                    if (jaInseriuRam == true) {
+                        if (maquinaDaVez.getTipoComponente().equalsIgnoreCase("Memória RAM")) {
+
+                            insertTbLeituraNuvem(maquinaDaVez.getIdConfig(), fkAlerta);
+                            //insertTbLeituraLocal(maquinaDaVez.getIdConfig(), fkAlerta);
+
+                            jaInseriuRam = false;
+                            System.out.println("**********inseriu ram");
+                        }
+                    }
+                }
 
                 //---------------------------------------------------------------------------//
                 //Discos em uso
+                Boolean jaInseriuDisco = true;
+
                 for (Volume disco : listaDiscos) {
 
                     String leituraDiscoFormatada = converterUnidadeMedida((disco.getTotal() - disco.getDisponivel()), "disco");
@@ -210,12 +231,23 @@ public class Controller {
                     System.out.println("Em uso do disco " + disco.getNome() + " "
                             + leituraModel.getLeitura());
 
-//                    insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                    insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+                    for (MaquinaUnidade maquinaDaVez : listaMaquina) {
+                        if (jaInseriuDisco == true) {
+                            if (maquinaDaVez.getTipoComponente().equalsIgnoreCase("Disco Rígido")) {
+
+                                insertTbLeituraNuvem(maquinaDaVez.getIdConfig(), 1);
+                                //insertTbLeituraLocal(maquinaDaVez.getIdConfig(), 1);
+                                jaInseriuDisco = false;
+                                System.out.println("**********inseriu disco");
+                            }
+                        }
+                    }
+
                 }
 
-//                //Redes em uso internet e wi-fi
+                //Redes em uso internet e wi-fi
                 System.out.println(listaRedes.size());
+                Boolean jaInseriuRede = true;
                 for (int i = listaRedes.size() - 1; i >= 0; i--) {
 
                     if (listaRedes.get(i).getBytesRecebidos().doubleValue() != 0
@@ -223,7 +255,7 @@ public class Controller {
 
                         Long leituraBytesRecebidos = listaRedes.get(i).getBytesRecebidos();
                         Long leituraBytesEnviados = listaRedes.get(i).getBytesEnviados();
-                        
+
                         String leituraByteRecebidoConvertida = converterUnidadeMedida(leituraBytesRecebidos, "rede");
                         String leituraByteEnviadosConvertida = converterUnidadeMedida(leituraBytesEnviados, "rede");
 
@@ -238,8 +270,17 @@ public class Controller {
                         System.out.println("Bytes enviados: " + leituraByteEnviadosConvertida);
                         System.out.println("-----------------------------------------------------");
 
-//                        insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                        insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+                        for (MaquinaUnidade maquinaDaVez : listaMaquina) {
+                            if (jaInseriuRede == true) {
+                                if (maquinaDaVez.getTipoComponente().equalsIgnoreCase("Placa de Rede")) {
+
+                                    insertTbLeituraNuvem(maquinaDaVez.getIdConfig(), 1);
+                                    //insertTbLeituraLocal(maquinaDaVez.getIdConfig(), 1);
+                                    jaInseriuRede = false;
+                                    System.out.println("**********inseriu rede");
+                                }
+                            }
+                        }
 
                     }
                 }
@@ -251,9 +292,20 @@ public class Controller {
 
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
-//                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
-                insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
+                Boolean jaInseriuCpu = true;
+
+                for (MaquinaUnidade maquinaDaVez : listaMaquina) {
+                    if (jaInseriuCpu == true) {
+                        if (maquinaDaVez.getTipoComponente().equalsIgnoreCase("CPU")) {
+
+                            insertTbLeituraNuvem(maquinaDaVez.getIdConfig(), 1);
+                            //insertTbLeituraLocal(maquinaDaVez.getIdConfig(), 1);
+                            jaInseriuCpu = false;
+                            System.out.println("**********inseriu cpu");
+                        }
+                    }
+                }
             }
-        }, 0, 100000);
+        }, 0, 30000);
     }
 }
