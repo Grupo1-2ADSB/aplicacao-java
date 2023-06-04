@@ -36,18 +36,19 @@ public class Logs {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
         long memoriaUtilizada = memoria.getEmUso();
         double processadorUtilizado = processador.getUso();
-        double discoUtilizado = volume.getTotal() - volume.getDisponivel();
+        long discoUtilizado = volume.getTotal() - volume.getDisponivel();
         long bytesRecebidos = rede.getBytesRecebidos();
         long bytesEnviados = rede.getBytesEnviados();
         String usoMemoriaFormatado = conversor.formatarBytes(memoriaUtilizada);
+        String discoFormatado = conversor.formatarBytes(discoUtilizado);
 
-        return String.format("[%s]: Uso de memória: %s\n[%s]: Uso do Processador: %.2f\n[%s]: Disco Utilizado: %.2f\n[%s]: Bytes Recebidos: %s\n[%s]: Bytes Enviados: %s\n",
+        return String.format("[%s]: Uso de memória: %s\n[%s]: Uso do Processador: %.2f\n[%s]: Disco Utilizado: %s\n[%s]: Bytes Recebidos: %s\n[%s]: Bytes Enviados: %s\n",
                 sdf.format(timestamp), 
                 usoMemoriaFormatado, 
                 sdf.format(timestamp), 
                 processadorUtilizado, 
                 sdf.format(timestamp),
-                discoUtilizado,
+                discoFormatado,
                 sdf.format(timestamp),
                 bytesRecebidos, 
                 sdf.format(timestamp),

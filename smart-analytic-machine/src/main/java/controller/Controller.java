@@ -7,6 +7,7 @@ package controller;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
+import com.github.britooo.looca.api.util.Conversor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import service.ConexaoBancoLocal;
@@ -18,6 +19,7 @@ import java.util.TimerTask;
 import model.UsuarioModel;
 import model.LeituraModel;
 import model.LeituraUsuario;
+import model.MaquinaUnidade;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import service.ConexaoBancoNuvem;
@@ -47,6 +49,12 @@ public class Controller {
 
     //Grupo de redes internet e wi-fi
     List<RedeInterface> listaRedes = new ArrayList(looca.getRede().getGrupoDeInterfaces().getInterfaces());
+
+    Conversor conversor = new Conversor();
+
+    MaquinaUnidade maquinaUnidade = new MaquinaUnidade();
+
+    Integer nSerie;
 
     //Select de dados do usuário - Login Local
     public List<UsuarioModel> selectDadosUsuarioLocal(String usuario, String senha) {
@@ -94,6 +102,12 @@ public class Controller {
                 + " from tbLeitura as l join tbConfig as c on l.fkConfig = c.idConfig join tbMaquina as m on m.idMaquina = c.fkMaquina join tbUsuario as u on u.fkMaquina = m.idMaquina where nomeUsuario = ? and senhaUsuario = ? order by idLeitura desc ;",
                 new BeanPropertyRowMapper(LeituraUsuario.class), usuario, senha);
 
+        for (int i = 0; i < listaLeituraUsuarioNuvem.size(); i++) {
+            nSerie = listaLeituraUsuarioNuvem.get(i).getnSerie();
+        }
+        
+        System.out.println("nSerie"+nSerie);
+
         return listaLeituraUsuarioNuvem;
     }
 
@@ -114,6 +128,54 @@ public class Controller {
                 fkConfig, fkAlertaComponente);
     }
 
+    //Select de dados de unidade de medida Nuvem
+    public List<MaquinaUnidade> selectDadosUnidadeMedidaNuvem(Integer nSerie) {
+
+        List<MaquinaUnidade> maquinaUnidade = new ArrayList();
+
+        maquinaUnidade = conNuvem.query("SELECT * FROM [dbo].[tbMaquina] as maq \n"
+                + "	JOIN [dbo].[tbConfig] as conf ON conf.fkMaquina = maq.idMaquina\n"
+                + "		JOIN [dbo].[tbComponente] AS comp ON conf.fkComponente = comp.idComponente\n"
+                + "			JOIN [dbo].[tbTipoComponente] as tipoComp ON comp.fkTipoComponente = tipoComp.idTipoComponente\n"
+                + "				JOIN [dbo].[tbUnidadeComponente] as uniC ON uniC.fkTipoComponente = tipoComp.idTipoComponente\n"
+                + "					JOIN [dbo].[tbUnidade] as uni ON uniC.fkUnidade = uni.idUnidade\n"
+                + "						WHERE maq.nSerie = ?;",
+                new BeanPropertyRowMapper(MaquinaUnidade.class), nSerie);
+
+        return maquinaUnidade;
+    }
+
+    public String converterUnidadeMedida(Long valor, String leitura) {
+
+        List<MaquinaUnidade> maqUni = selectDadosUnidadeMedidaNuvem(nSerie);
+
+        String leituraFormatada = "";
+
+        for (int i = 0; i < maqUni.size(); i++) {
+
+            System.out.println(String.format("comp: %s \nsigla: %s", maqUni.get(i).getTipoComponente(), maqUni.get(i).getSigla()));
+            if (maqUni.get(i).getTipoComponente().equalsIgnoreCase("Memória RAM") && leitura.equalsIgnoreCase("memoria")) {
+//                if (maqUni.get(i).getSigla().equalsIgnoreCase("GB")) {
+                    leituraFormatada = conversor.formatarBytes(valor);
+                    System.out.println(leituraFormatada);
+//                }
+            } else if (maqUni.get(i).getTipoComponente().equalsIgnoreCase("Placa de rede") && leitura.equalsIgnoreCase("rede")) {
+                leituraFormatada = Long.toString((valor * 8) / 1000000);
+            } else if (maqUni.get(i).getTipoComponente().equalsIgnoreCase("Disco Rígido") && leitura.equalsIgnoreCase("disco")) {
+                if (maqUni.get(i).getSigla().equalsIgnoreCase("GB")) {
+                    leituraFormatada = conversor.formatarBytes(valor);
+                    System.out.println(leituraFormatada);
+                } else {
+                    leituraFormatada = Long.toString(valor / 1099511627);
+                    System.out.println(leituraFormatada);
+                }
+            }
+        }
+        System.out.println(leituraFormatada);
+        return leituraFormatada;
+    }
+
+
     /*--------------------------------------------------------------------------------*/
     //Método de inserção no banco com timer task para inserir a cada x tempo
     public void inserirNoBanco(Integer fkConfig, Integer fkAlertaComponente) {
@@ -124,34 +186,32 @@ public class Controller {
 
                 //data e hora 
                 leituraModel.setDataHoraLeitura(LocalDateTime.now());
-
-                Long leituraMemoriaUso = looca.getMemoria().getEmUso();
-
-                BigDecimal leituraMemoriaUsoFormatada = BigDecimal.valueOf(leituraMemoriaUso).setScale(2, RoundingMode.FLOOR);
                 
-                //Uso memória
-                leituraModel.setLeitura(leituraMemoriaUsoFormatada);
+                System.out.println("teste"+looca.getMemoria().getEmUso());
+
+                String leituraMemoriaFormatada = converterUnidadeMedida(looca.getMemoria().getEmUso(), "Memoria");
+
+                System.out.println("leituraMemoriaFormatada"+leituraMemoriaFormatada);
+
+                leituraModel.setLeitura(leituraMemoriaFormatada);
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
-
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+//                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                 //---------------------------------------------------------------------------//
                 //Discos em uso
                 for (Volume disco : listaDiscos) {
 
-                    Long leituraEmUsoDisco = disco.getTotal() - disco.getDisponivel();
-                    BigDecimal leituraFormatadaDisco = BigDecimal.valueOf(leituraEmUsoDisco).setScale(2, RoundingMode.FLOOR);
+                    String leituraDiscoFormatada = converterUnidadeMedida((disco.getTotal() - disco.getDisponivel()), "disco");
 
-                    leituraModel.setLeitura(leituraFormatadaDisco);
+                    leituraModel.setLeitura(leituraDiscoFormatada);
 
                     System.out.println("Em uso do disco " + disco.getNome() + " "
                             + leituraModel.getLeitura());
 
-                    insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+//                    insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                     insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
-
                 }
 
 //                //Redes em uso internet e wi-fi
@@ -163,35 +223,35 @@ public class Controller {
 
                         Long leituraBytesRecebidos = listaRedes.get(i).getBytesRecebidos();
                         Long leituraBytesEnviados = listaRedes.get(i).getBytesEnviados();
-                        BigDecimal leituraFormatadaBytesRecebidos = BigDecimal.valueOf(leituraBytesRecebidos).setScale(2, RoundingMode.FLOOR);
-                        BigDecimal leituraFormatadaBytesEnviados = BigDecimal.valueOf(leituraBytesEnviados).setScale(2, RoundingMode.FLOOR);
+                        
+                        String leituraByteRecebidoConvertida = converterUnidadeMedida(leituraBytesRecebidos, "rede");
+                        String leituraByteEnviadosConvertida = converterUnidadeMedida(leituraBytesEnviados, "rede");
 
-                        leituraModel.setLeitura(leituraFormatadaBytesEnviados);
-                        leituraModel.setLeitura(leituraFormatadaBytesRecebidos);
+                        leituraModel.setLeitura(leituraByteRecebidoConvertida);
+                        leituraModel.setLeitura(leituraByteEnviadosConvertida);
 
                         System.out.println("-----------------------------------------------------");
                         System.out.println("Em uso da rede: " + listaRedes.get(i).getNome() + " : "
                                 + leituraModel.getLeitura());
 
-                        System.out.println("Bytes recebidos: " + leituraFormatadaBytesRecebidos);
-                        System.out.println("Bytes enviados: " + leituraFormatadaBytesEnviados);
+                        System.out.println("Bytes recebidos: " + leituraByteRecebidoConvertida);
+                        System.out.println("Bytes enviados: " + leituraByteEnviadosConvertida);
                         System.out.println("-----------------------------------------------------");
 
-                        insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+//                        insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                         insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
 
                     }
                 }
-
                 //---------------------------------------------------------------------------//
                 //Uso processador
-                Double leituraUsoProcessador = looca.getProcessador().getUso();
-                BigDecimal leituraFormatadaUsoProcessador = BigDecimal.valueOf(leituraUsoProcessador).setScale(2, RoundingMode.FLOOR);
-                leituraModel.setLeitura(leituraFormatadaUsoProcessador);
+                String leituraUsoProcessador = looca.getProcessador().getUso().toString();
+
+                leituraModel.setLeitura(leituraUsoProcessador);
 
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
-                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
+//                insertTbLeituraLocal(fkConfig, fkAlertaComponente);
                 insertTbLeituraNuvem(fkConfig, fkAlertaComponente);
             }
         }, 0, 100000);
