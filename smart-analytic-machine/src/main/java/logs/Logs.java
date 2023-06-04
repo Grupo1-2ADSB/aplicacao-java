@@ -41,9 +41,17 @@ public class Logs {
         long bytesEnviados = rede.getBytesEnviados();
         String usoMemoriaFormatado = conversor.formatarBytes(memoriaUtilizada);
 
-        return String.format("%s - Uso de memória: %s - Uso do Processador: %.2f - Disco Utilizado: %.2f - Bytes Recebidos: %s - Bytes Enviados: %s%n",
-                sdf.format(timestamp), usoMemoriaFormatado, processadorUtilizado, discoUtilizado,
-                bytesRecebidos, bytesEnviados);
+        return String.format("[%s]: Uso de memória: %s\n[%s]: Uso do Processador: %.2f\n[%s]: Disco Utilizado: %.2f\n[%s]: Bytes Recebidos: %s\n[%s]: Bytes Enviados: %s\n",
+                sdf.format(timestamp), 
+                usoMemoriaFormatado, 
+                sdf.format(timestamp), 
+                processadorUtilizado, 
+                sdf.format(timestamp),
+                discoUtilizado,
+                sdf.format(timestamp),
+                bytesRecebidos, 
+                sdf.format(timestamp),
+                bytesEnviados);
     }
 
     private static void criarArquivoLog(List<String> logs) {

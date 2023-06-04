@@ -10,6 +10,7 @@ service\ConexaoBancoLocal.class
 model\LeituraUsuario.class
 slack\Slack.class
 javaSwing\Login$3.class
+logs\Logs.class
 model\LeituraModel.class
 javaSwing\Login$4.class
 javaSwing\Login.class

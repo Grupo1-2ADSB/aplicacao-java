@@ -324,7 +324,7 @@ public class Login extends javax.swing.JFrame {
         String senha = String.valueOf(iptPass.getText());
         
         /*-------------------------------------------------------------------------*/
-        //invocando o método selectDadosUsuario             
+        //invocando o método selectDadosUsuario
         List<UsuarioModel> listaUsuario = controller.selectDadosUsuarioLocal(usuario, senha);
         System.out.println(listaUsuario);
         

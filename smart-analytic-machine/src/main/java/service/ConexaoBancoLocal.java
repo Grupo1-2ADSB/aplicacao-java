@@ -24,7 +24,7 @@ public class ConexaoBancoLocal {
         
         dataSource​.setUsername("root");
 
-        dataSource​.setPassword("root");
+        dataSource​.setPassword("rootmysql123/");
 
         this.connectionLocal = new JdbcTemplate(dataSource);
 

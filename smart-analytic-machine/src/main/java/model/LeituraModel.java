@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 /**
  *
@@ -12,12 +13,12 @@ import java.time.LocalDateTime;
 public class LeituraModel {
 
     private Integer leituraId;
-    private Double leitura;
+    private BigDecimal leitura;
     private LocalDateTime dataHoraLeitura;
     private Integer configFk;
     private Integer alertaComponenteFk;
 
-    public LeituraModel(Integer leituraId, Double leitura, Integer configFk, Integer alertaComponenteFk) {
+    public LeituraModel(Integer leituraId, BigDecimal leitura, Integer configFk, Integer alertaComponenteFk) {
         this.leituraId = leituraId;
         this.leitura = leitura;
         this.configFk = configFk;
@@ -36,7 +37,7 @@ public class LeituraModel {
         return leituraId;
     }
 
-    public Double getLeitura() {
+    public BigDecimal getLeitura() {
         return leitura;
     }
 
@@ -56,7 +57,7 @@ public class LeituraModel {
         this.leituraId = leituraId;
     }
 
-    public void setLeitura(Double leitura) {
+    public void setLeitura(BigDecimal leitura) {
         this.leitura = leitura;
     }
 

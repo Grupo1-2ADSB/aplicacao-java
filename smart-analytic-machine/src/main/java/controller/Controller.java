@@ -7,7 +7,8 @@ package controller;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import service.ConexaoBancoLocal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,9 +39,6 @@ public class Controller {
     //Instanciando Looca + Classes monitoradas
     Looca looca = new Looca();
 
-    DecimalFormat df = new DecimalFormat("##.00");
-    
-    
     //Instanciando Model de leitura - dados que vêm do looca
     LeituraModel leituraModel = new LeituraModel();
 
@@ -127,8 +125,12 @@ public class Controller {
                 //data e hora 
                 leituraModel.setDataHoraLeitura(LocalDateTime.now());
 
+                Long leituraMemoriaUso = looca.getMemoria().getEmUso();
+
+                BigDecimal leituraMemoriaUsoFormatada = BigDecimal.valueOf(leituraMemoriaUso).setScale(2, RoundingMode.FLOOR);
+                
                 //Uso memória
-                leituraModel.setLeitura(looca.getMemoria().getEmUso().doubleValue());
+                leituraModel.setLeitura(leituraMemoriaUsoFormatada);
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
 
@@ -139,9 +141,10 @@ public class Controller {
                 //Discos em uso
                 for (Volume disco : listaDiscos) {
 
-                    
-                    leituraModel.setLeitura((disco.getTotal().doubleValue()
-                            - disco.getDisponivel().doubleValue()));
+                    Long leituraEmUsoDisco = disco.getTotal() - disco.getDisponivel();
+                    BigDecimal leituraFormatadaDisco = BigDecimal.valueOf(leituraEmUsoDisco).setScale(2, RoundingMode.FLOOR);
+
+                    leituraModel.setLeitura(leituraFormatadaDisco);
 
                     System.out.println("Em uso do disco " + disco.getNome() + " "
                             + leituraModel.getLeitura());
@@ -151,22 +154,27 @@ public class Controller {
 
                 }
 
-                //Redes em uso internet e wi-fi
+//                //Redes em uso internet e wi-fi
                 System.out.println(listaRedes.size());
                 for (int i = listaRedes.size() - 1; i >= 0; i--) {
 
                     if (listaRedes.get(i).getBytesRecebidos().doubleValue() != 0
                             && listaRedes.get(i).getBytesEnviados().doubleValue() != 0) {
 
-                        leituraModel.setLeitura(listaRedes.get(i).getBytesRecebidos().doubleValue());
-                        leituraModel.setLeitura(listaRedes.get(i).getBytesEnviados().doubleValue());
+                        Long leituraBytesRecebidos = listaRedes.get(i).getBytesRecebidos();
+                        Long leituraBytesEnviados = listaRedes.get(i).getBytesEnviados();
+                        BigDecimal leituraFormatadaBytesRecebidos = BigDecimal.valueOf(leituraBytesRecebidos).setScale(2, RoundingMode.FLOOR);
+                        BigDecimal leituraFormatadaBytesEnviados = BigDecimal.valueOf(leituraBytesEnviados).setScale(2, RoundingMode.FLOOR);
+
+                        leituraModel.setLeitura(leituraFormatadaBytesEnviados);
+                        leituraModel.setLeitura(leituraFormatadaBytesRecebidos);
 
                         System.out.println("-----------------------------------------------------");
                         System.out.println("Em uso da rede: " + listaRedes.get(i).getNome() + " : "
                                 + leituraModel.getLeitura());
 
-                        System.out.println("Bytes recebidos: " + listaRedes.get(i).getBytesRecebidos().doubleValue());
-                        System.out.println("Bytes enviados: " + listaRedes.get(i).getBytesEnviados().doubleValue());
+                        System.out.println("Bytes recebidos: " + leituraFormatadaBytesRecebidos);
+                        System.out.println("Bytes enviados: " + leituraFormatadaBytesEnviados);
                         System.out.println("-----------------------------------------------------");
 
                         insertTbLeituraLocal(fkConfig, fkAlertaComponente);
@@ -177,7 +185,9 @@ public class Controller {
 
                 //---------------------------------------------------------------------------//
                 //Uso processador
-                leituraModel.setLeitura(looca.getProcessador().getUso().doubleValue());
+                Double leituraUsoProcessador = looca.getProcessador().getUso();
+                BigDecimal leituraFormatadaUsoProcessador = BigDecimal.valueOf(leituraUsoProcessador).setScale(2, RoundingMode.FLOOR);
+                leituraModel.setLeitura(leituraFormatadaUsoProcessador);
 
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
