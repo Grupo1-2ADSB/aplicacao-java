@@ -8,6 +8,7 @@ import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import com.github.britooo.looca.api.util.Conversor;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import service.ConexaoBancoLocal;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.UsuarioModel;
 import model.LeituraModel;
 import model.LeituraUsuario;
@@ -23,6 +26,7 @@ import model.MaquinaUnidade;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import service.ConexaoBancoNuvem;
+import slack.Slack;
 
 /**
  *
@@ -55,6 +59,8 @@ public class Controller {
     MaquinaUnidade maquinaUnidade = new MaquinaUnidade();
 
     Integer nSerie;
+
+    Slack slack = new Slack();
 
     //Select de dados do usuário - Login Local
     public List<UsuarioModel> selectDadosUsuarioLocal(String usuario, String senha) {
@@ -197,6 +203,17 @@ public class Controller {
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
 
+                // Slack notificação memoria
+                String leituraMemoriaTotal = converterUnidadeMedida(looca.getMemoria().getTotal(), "Memoria");
+
+                if ((Double.parseDouble(leituraMemoriaFormatada) / Double.parseDouble(leituraMemoriaTotal)) * 100 >= 80.0) {
+                    try {
+                        slack.validaMemoria();
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
                 /*-------------------------------------------------------------------------*/
                 List<MaquinaUnidade> listaMaquina = selectDadosUnidadeMedidaNuvem(nSerie);
 
@@ -230,6 +247,15 @@ public class Controller {
 
                     System.out.println("Em uso do disco " + disco.getNome() + " "
                             + leituraModel.getLeitura());
+
+                    // Slack notificação Disco
+                    if ((Double.parseDouble(leituraDiscoFormatada) / disco.getTotal()) * 100 >= 90.0) {
+                        try {
+                            slack.validaDisco();
+                        } catch (IOException | InterruptedException ex) {
+                            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
 
                     for (MaquinaUnidade maquinaDaVez : listaMaquina) {
                         if (jaInseriuDisco == true) {
@@ -294,6 +320,15 @@ public class Controller {
 
                 Boolean jaInseriuCpu = true;
 
+                // Slack notificação Processador
+                if (Double.parseDouble(leituraUsoProcessador) >= 90.0) {
+                    try {
+                        slack.validaProcessador();
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
                 for (MaquinaUnidade maquinaDaVez : listaMaquina) {
                     if (jaInseriuCpu == true) {
                         if (maquinaDaVez.getTipoComponente().equalsIgnoreCase("CPU")) {
