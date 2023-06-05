@@ -203,17 +203,6 @@ public class Controller {
 
                 System.out.println("Memória em uso: " + leituraModel.getLeitura());
 
-                // Slack notificação memoria
-                String leituraMemoriaTotal = converterUnidadeMedida(looca.getMemoria().getTotal(), "Memoria");
-
-                if ((Double.parseDouble(leituraMemoriaFormatada) / Double.parseDouble(leituraMemoriaTotal)) * 100 >= 80.0) {
-                    try {
-                        slack.validaMemoria();
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
                 /*-------------------------------------------------------------------------*/
                 List<MaquinaUnidade> listaMaquina = selectDadosUnidadeMedidaNuvem(nSerie);
 
@@ -247,15 +236,6 @@ public class Controller {
 
                     System.out.println("Em uso do disco " + disco.getNome() + " "
                             + leituraModel.getLeitura());
-
-                    // Slack notificação Disco
-                    if ((Double.parseDouble(leituraDiscoFormatada) / disco.getTotal()) * 100 >= 90.0) {
-                        try {
-                            slack.validaDisco();
-                        } catch (IOException | InterruptedException ex) {
-                            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
 
                     for (MaquinaUnidade maquinaDaVez : listaMaquina) {
                         if (jaInseriuDisco == true) {
@@ -319,15 +299,6 @@ public class Controller {
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
                 Boolean jaInseriuCpu = true;
-
-                // Slack notificação Processador
-                if (Double.parseDouble(leituraUsoProcessador) >= 90.0) {
-                    try {
-                        slack.validaProcessador();
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
                 
                 for (MaquinaUnidade maquinaDaVez : listaMaquina) {
                     if (jaInseriuCpu == true) {
