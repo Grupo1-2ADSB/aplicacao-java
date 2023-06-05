@@ -13,20 +13,11 @@ import org.json.JSONObject;
  */
 public class App {
     public static void main(String[] args) throws IOException, InterruptedException {
-        JSONObject alertaCpu = new JSONObject();
-        JSONObject alertaRam = new JSONObject();
-        JSONObject alertaDisco = new JSONObject();
-        JSONObject alertaRede = new JSONObject();
         
-        //json.put("text", "Teste test :double_exclamation_mark: :cross_mark: :check_mark: "
-        //        + ":check_mark_button: :red_exclamation_mark: :white_exclamation_mark:");
-        //Slack.sendMessage(json);
+        JSONObject alertaNotifica = new JSONObject();
         
-        alertaCpu.put("text", "Cpu!!!");
-        alertaRam.put("text", "Ram!!!");
-        alertaDisco.put("text", "Disco !!!");
-        alertaRede.put("text", "Rede!!!");
-        
-        Slack.sendMessage(alertaRam);
+        alertaNotifica.put("text", "!!!");
+ 
+        Slack.sendMessage(alertaNotifica);
     }
 }
