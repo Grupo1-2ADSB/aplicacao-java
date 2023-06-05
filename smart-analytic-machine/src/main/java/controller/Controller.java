@@ -9,8 +9,11 @@ import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import com.github.britooo.looca.api.util.Conversor;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import service.ConexaoBancoLocal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,8 +62,6 @@ public class Controller {
     MaquinaUnidade maquinaUnidade = new MaquinaUnidade();
 
     Integer nSerie;
-
-    Slack slack = new Slack();
 
     //Select de dados do usuário - Login Local
     public List<UsuarioModel> selectDadosUsuarioLocal(String usuario, String senha) {
@@ -180,8 +181,6 @@ public class Controller {
         System.out.println(leituraFormatada);
         return leituraFormatada;
     }
-
-
     /*--------------------------------------------------------------------------------*/
     //Método de inserção no banco com timer task para inserir a cada x tempo
     public void inserirNoBanco() {
@@ -311,6 +310,7 @@ public class Controller {
                         }
                     }
                 }
+                
             }
         }, 0, 30000);
     }
