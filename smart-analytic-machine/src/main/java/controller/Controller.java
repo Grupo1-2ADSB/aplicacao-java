@@ -254,10 +254,17 @@ public class Controller {
                 
                 // Slack notificação memoria
                 String leituraMemoriaTotal = converterUnidadeMedida(looca.getMemoria().getTotal(), "Memoria");
+               
+                System.out.println(leituraMemoriaFormatada);
+                
+                String leituraMemoriaFormatadaF = leituraMemoriaFormatada.replace(",", ".").replace("GiB", "");
+                String leituraMemoriaTotalFormatada = leituraMemoriaTotal.replace(",", ".").replace("GiB", "");
+                System.out.println(leituraMemoriaFormatada);
+                System.out.println(leituraMemoriaTotalFormatada);
 
-                if ((Double.parseDouble(leituraMemoriaFormatada) / Double.parseDouble(leituraMemoriaTotal)) * 100 >= 80.0) {
+                if ((Double.parseDouble(leituraMemoriaFormatadaF) / Double.parseDouble(leituraMemoriaTotalFormatada)) * 100 >= 80.0) {
                     try {
-                        slack.validaMemoria();
+                        slack.validaMemoria(nSerie);
                     } catch (IOException | InterruptedException ex) {
                         Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -330,7 +337,7 @@ public class Controller {
                     // Slack notificação Disco
                     if ((Double.parseDouble(leituraDiscoFormatada) / disco.getTotal()) * 100 >= 90.0) {
                         try {
-                            slack.validaDisco();
+                            slack.validaDisco(nSerie);
                         } catch (IOException | InterruptedException ex) {
                             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -453,7 +460,7 @@ public class Controller {
                 // Slack notificação Processador
                 if (Double.parseDouble(leituraUsoProcessador) >= 90.0) {
                     try {
-                        slack.validaProcessador();
+                        slack.validaProcessador(nSerie);
                     } catch (IOException | InterruptedException ex) {
                         Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }

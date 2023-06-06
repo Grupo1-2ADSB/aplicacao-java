@@ -19,21 +19,21 @@ import org.json.JSONObject;
 public class Slack {
 
     private static HttpClient client = HttpClient.newHttpClient();
-    private static final String url = "https://hooks.slack.com/services/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";
+    private static final String url = "https://hooks.slack.com/services/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";
     private static final JSONObject alertaNotifica = new JSONObject();
 
-    public void validaMemoria() throws IOException, InterruptedException {
-        alertaNotifica.put("text", "Memória acima de 80% em uso!");
+        public void validaMemoria(Integer nSerie) throws IOException, InterruptedException {
+        alertaNotifica.put("text", "Maquina " +nSerie+ " com memória acima de 80% em uso!");
         sendMessage(alertaNotifica);
     }
 
-    public void validaDisco() throws IOException, InterruptedException {
-        alertaNotifica.put("text", "Disco acima de 90% em uso!");
+    public void validaDisco(Integer nSerie) throws IOException, InterruptedException {
+        alertaNotifica.put("text", "Maquina " +nSerie+ " com disco acima de 90% em uso!");
         sendMessage(alertaNotifica);
     }
 
-    public void validaProcessador() throws IOException, InterruptedException {
-        alertaNotifica.put("text", "Processador acima de 90% em uso!");
+    public void validaProcessador(Integer nSerie) throws IOException, InterruptedException {
+        alertaNotifica.put("text", "Maquina " +nSerie+ " com processador acima de 90% em uso!");
         sendMessage(alertaNotifica);
     }
 
