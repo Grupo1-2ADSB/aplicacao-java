@@ -8,8 +8,6 @@ import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import com.github.britooo.looca.api.util.Conversor;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import service.ConexaoBancoLocal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +21,7 @@ import model.MaquinaUnidade;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import service.ConexaoBancoNuvem;
+import slack.Slack;
 
 /**
  *
@@ -228,8 +227,6 @@ public class Controller {
         System.out.println(leituraFormatada);
         return leituraFormatada;
     }
-
-
     /*--------------------------------------------------------------------------------*/
     //Método de inserção no banco com timer task para inserir a cada x tempo
     public void inserirNoBanco() {
@@ -427,7 +424,7 @@ public class Controller {
                 System.out.println("Processador em uso: " + leituraModel.getLeitura());
 
                 Boolean jaInseriuCpu = true;
-
+                
                 for (MaquinaUnidade maquinaDaVez : listaMaquina) {
                     if (jaInseriuCpu == true) {
                         if (maquinaDaVez.getTipoComponente().equalsIgnoreCase("CPU")) {
@@ -453,7 +450,7 @@ public class Controller {
                         }
                     }
                 }
-
+                
             }
         }, 0, 10000);
     }

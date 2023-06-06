@@ -17,10 +17,26 @@ import org.json.JSONObject;
  * @author Alexa
  */
 public class Slack {
-    
+
     private static HttpClient client = HttpClient.newHttpClient();
     private static final String url = "https://hooks.slack.com/services/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";
-    
+    private static final JSONObject alertaNotifica = new JSONObject();
+
+    public void validaMemoria() throws IOException, InterruptedException {
+        alertaNotifica.put("text", "Memória acima de 80% em uso!");
+        sendMessage(alertaNotifica);
+    }
+
+    public void validaDisco() throws IOException, InterruptedException {
+        alertaNotifica.put("text", "Disco acima de 90% em uso!");
+        sendMessage(alertaNotifica);
+    }
+
+    public void validaProcessador() throws IOException, InterruptedException {
+        alertaNotifica.put("text", "Processador acima de 90% em uso!");
+        sendMessage(alertaNotifica);
+    }
+
     public static void sendMessage(JSONObject content) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(URI.create(url))
                 .header("accept", "application/json")

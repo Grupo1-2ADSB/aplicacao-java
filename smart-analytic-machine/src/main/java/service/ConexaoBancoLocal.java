@@ -22,9 +22,9 @@ public class ConexaoBancoLocal {
 
         dataSource​.setUrl("jdbc:mysql://localhost:3306/sam?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
         
-        dataSource​.setUsername("teste");
+        dataSource​.setUsername("root");
 
-        dataSource​.setPassword("#Gfgrupo1");
+        dataSource​.setPassword("Gfgrupo1");
 
         this.connectionLocal = new JdbcTemplate(dataSource);
 
