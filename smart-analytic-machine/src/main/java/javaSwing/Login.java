@@ -344,7 +344,7 @@ public class Login extends javax.swing.JFrame {
         
         /*-----------------------------------------------------------------------------*/
 
-        if (listaUsuario.isEmpty() || listaUsuarioNuvem.isEmpty() ) {
+        if ( listaUsuarioNuvem.isEmpty() && listaUsuario.isEmpty() ) {
 
             JOptionPane.showMessageDialog(jPanelParent, "Usuário não encontrado", "ERRO", JOptionPane.OK_OPTION);
         } else {
